@@ -1,7 +1,11 @@
+import { getSongs } from "@/actions";
+import PageContent from "@/components/pageContent/PageContent";
 import Heading from "@/components/ui/Heading";
 import ListItem from "@/components/ui/ListItem";
 
-export default function Home() {
+export default async function Home() {
+  const songs = await getSongs();
+  console.log(songs);
   return (
     <div className="bg-neutral-900 w-full h-full rounded-lg overflow-hidden overflow-y-auto">
       <Heading>
@@ -20,7 +24,7 @@ export default function Home() {
             Latest songs
           </h1>
         </div>
-        <div className="">List of songs</div>
+        <PageContent songs={songs} />
       </div>
     </div>
   );
