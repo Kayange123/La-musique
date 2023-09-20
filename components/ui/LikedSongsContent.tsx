@@ -1,3 +1,5 @@
+"use client";
+
 import { useUser } from "@/hooks/useUser";
 import { ISong } from "@/types";
 import { useRouter } from "next/navigation";

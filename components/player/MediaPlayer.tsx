@@ -1,7 +1,6 @@
 import useGetSongById from "@/hooks/useGetSongById";
 import useLoadSong from "@/hooks/useLoadSong";
 import usePlayer from "@/hooks/usePlayer";
-import React from "react";
 import PlayerContent from "./PlayerContent";
 
 const MediaPlayer = () => {

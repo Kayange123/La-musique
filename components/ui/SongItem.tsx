@@ -4,6 +4,7 @@ import { ISong } from "@/types";
 import Image from "next/image";
 import React from "react";
 import PlayButton from "./PlayButton";
+import { defaultImage } from "@/common.constant";
 
 interface SongItemProps {
   song: ISong;
@@ -18,7 +19,7 @@ const SongItem = ({ song, onClick }: SongItemProps) => {
     >
       <div className="relative aspect-square rounded-md overflow-hidden h-full w-full">
         <Image
-          src={imagePath || ""}
+          src={imagePath || defaultImage}
           alt="banner image"
           fill
           className="object-cover"
