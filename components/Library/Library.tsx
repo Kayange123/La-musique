@@ -41,7 +41,9 @@ const Library = ({ songs }: LibraryProps) => {
             <MediaItem key={song?.id} onClick={() => {}} song={song} />
           ))
         ) : (
-          <p>Upload songs to see them here!</p>
+          <p className="text-neutral-500 text-xs pl-3">
+            Upload songs to see them here!
+          </p>
         )}
       </div>
     </div>

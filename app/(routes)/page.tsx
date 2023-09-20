@@ -1,11 +1,12 @@
 import { getSongs } from "@/actions";
+import { defaultImage } from "@/common.constant";
 import PageContent from "@/components/pageContent/PageContent";
 import Heading from "@/components/ui/Heading";
 import ListItem from "@/components/ui/ListItem";
 
 export default async function Home() {
   const songs = await getSongs();
-  console.log(songs);
+
   return (
     <div className="bg-neutral-900 w-full h-full rounded-lg overflow-hidden overflow-y-auto">
       <Heading>
@@ -14,7 +15,11 @@ export default async function Home() {
             Welcome back
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
-            <ListItem image="" href="" name="Liked songs" />
+            <ListItem
+              image={defaultImage}
+              href="/liked-songs"
+              name="Liked songs"
+            />
           </div>
         </div>
       </Heading>
