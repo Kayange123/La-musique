@@ -1,8 +1,9 @@
+"use client";
+
 import { defaultImage } from "@/common.constant";
 import useLoadImage from "@/hooks/useLoadImage";
 import { ISong } from "@/types";
 import Image from "next/image";
-import React from "react";
 
 interface MediaItemProps {
   onClick: (id: string) => void;
