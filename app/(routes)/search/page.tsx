@@ -10,7 +10,7 @@ interface PageProps {
 }
 export const revalidate = 0;
 const SearchPage = async ({ searchParams }: PageProps) => {
-  const songs = await getSongsByTitle(searchParams?.title);
+  const songs = await getSongsByTitle(searchParams.title);
   return (
     <div className="bg-neutral-900 rounded-lg w-full h-full overflow-hidden overflow-y-auto">
       <Heading className="from-bg-neutral-900">
