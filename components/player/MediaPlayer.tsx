@@ -7,8 +7,8 @@ import PlayerContent from "./PlayerContent";
 const MediaPlayer = () => {
   const player = usePlayer();
   const { song } = useGetSongById(player?.activeId);
-  //const songUrl = useLoadSong(song!);
-  const songUrl = "";
+  const songUrl = useLoadSong(song!);
+
   if (!song || !songUrl || !player.activeId) {
     return null;
   }

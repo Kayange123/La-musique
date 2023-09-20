@@ -1,5 +1,4 @@
 "use client";
-
 import { ISong } from "@/types";
 import { useEffect, useState } from "react";
 import MediaItem from "../ui/MediaItem";
@@ -10,9 +9,8 @@ import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import Slider from "../ui/Slider";
 import usePlayer from "@/hooks/usePlayer";
-
-//import conflicts with ts, since package has no types
-const useSound = require("use-sound");
+//@ts-ignore
+import useSound from "use-sound";
 
 interface PlayerProps {
   songUrl: string;
