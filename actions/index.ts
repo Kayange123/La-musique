@@ -26,7 +26,7 @@ export const getSongsByUserId = async () => {
     await supabase.auth.getSession();
 
   if (sessionError) {
-    console.log(sessionError?.message);
+    //console.log(sessionError?.message);
   }
 
   const { data, error } = await supabase
