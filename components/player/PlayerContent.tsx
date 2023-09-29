@@ -81,8 +81,8 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   };
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
-      <div className="flex w-full justify-start">
-        <div className="flex items-center gap-x-4">
+      <div className="flex max-w-xs justify-start">
+        <div className="flex items-center w-full gap-x-4">
           <MediaItem song={song} onClick={handlePlay} />
           <LikeButton songId={song?.id} />
         </div>
@@ -102,7 +102,7 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
           className="text-neutral-400 cursor-pointer transition hover:text-white"
         />
         <div className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer">
-          <Icon size={30} className="text-black" />
+          <Icon onClick={handlePlay} size={30} className="text-black" />
         </div>
         <AiFillStepForward
           onClick={onPlayNext}
