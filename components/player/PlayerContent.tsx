@@ -1,6 +1,6 @@
 "use client";
 import { ISong } from "@/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import MediaItem from "../ui/MediaItem";
 import LikeButton from "../ui/LikeButton";
 import { IconType } from "react-icons";
@@ -15,6 +15,8 @@ import {
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import Slider from "../ui/Slider";
 import SeekBar from "./SeekBar";
+import useLoadImage from "@/hooks/useLoadImage";
+import { getShortcutAction } from "@/lib/shortcuts";
 import usePlayer from "@/hooks/usePlayer";
 import { getAutoNextId, getNextId, getPreviousId } from "@/lib/queue";
 import useSound from "use-sound";
@@ -24,6 +26,7 @@ interface PlayerProps {
   song: ISong;
 }
 const PlayerContent = ({ song, songUrl }: PlayerProps) => {
+  const imageUrl = useLoadImage(song);
   const volume = usePlayer((state) => state.volume);
   const setVolume = usePlayer((state) => state.setVolume);
   const toggleMute = usePlayer((state) => state.toggleMute);
@@ -94,6 +97,99 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
       pause();
     }
   };
+  const SEEK_STEP = 5;
+  const seekBy = (seconds: number) => {
+    const current = soundRef.current;
+    if (!current) {
+      return;
+    }
+    const target = current.seek() + seconds;
+    current.seek(Math.max(0, Math.min(target, current.duration())));
+  };
+
+  // Effect events see the latest state without re-subscribing on every
+  // render.
+  const onShortcut = useEffectEvent((event: KeyboardEvent) => {
+    const action = getShortcutAction({
+      key: event.key,
+      shiftKey: event.shiftKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      altKey: event.altKey,
+      target: event.target instanceof HTMLElement ? event.target : null,
+    });
+    if (!action) {
+      return;
+    }
+    event.preventDefault();
+    if (action === "toggle-play") handlePlay();
+    if (action === "seek-forward") seekBy(SEEK_STEP);
+    if (action === "seek-backward") seekBy(-SEEK_STEP);
+    if (action === "next") onPlayNext();
+    if (action === "previous") onPlayPrevious();
+    if (action === "toggle-mute") toggleMute();
+  });
+
+  useEffect(() => {
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, []);
+
+  // Lock screen, notification and hardware media key controls.
+  const onMediaAction = useEffectEvent((details: MediaSessionActionDetails) => {
+    if (details.action === "play" && !isPlaying) play();
+    if (details.action === "pause" && isPlaying) pause();
+    if (details.action === "nexttrack") onPlayNext();
+    if (details.action === "previoustrack") onPlayPrevious();
+    if (details.action === "seekforward") seekBy(SEEK_STEP);
+    if (details.action === "seekbackward") seekBy(-SEEK_STEP);
+    if (details.action === "seekto" && details.seekTime !== undefined) {
+      soundRef.current?.seek(details.seekTime);
+    }
+  });
+
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title ?? "",
+      artist: song.author ?? "",
+      artwork: imageUrl ? [{ src: imageUrl }] : [],
+    });
+    const actions: MediaSessionAction[] = [
+      "play",
+      "pause",
+      "nexttrack",
+      "previoustrack",
+      "seekforward",
+      "seekbackward",
+      "seekto",
+    ];
+    for (const action of actions) {
+      try {
+        navigator.mediaSession.setActionHandler(action, onMediaAction);
+      } catch {
+        // Not every browser supports every action.
+      }
+    }
+    return () => {
+      for (const action of actions) {
+        try {
+          navigator.mediaSession.setActionHandler(action, null);
+        } catch {
+          // As above.
+        }
+      }
+    };
+  }, [song.title, song.author, imageUrl]);
+
+  useEffect(() => {
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+    }
+  }, [isPlaying]);
+
   const playLabel = isPlaying ? "Pause" : "Play";
 
   return (
