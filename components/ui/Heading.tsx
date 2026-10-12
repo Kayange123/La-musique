@@ -8,7 +8,7 @@ import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
 import Button from "./Button";
 import useAuthModal from "@/hooks/useAuthModal";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useUser } from "@/hooks/useUser";
 import { FaUserAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -20,7 +20,7 @@ interface HeadingProps {
 const Heading = ({ children, className }: HeadingProps) => {
   const router = useRouter();
   const authModal = useAuthModal();
-  const supabaseClient = useSupabaseClient();
+  const { supabaseClient } = useSupabase();
   const { user } = useUser();
 
   const handleLogout = async () => {
@@ -37,7 +37,7 @@ const Heading = ({ children, className }: HeadingProps) => {
     <div
       className={twMerge(
         "h-fit bg-gradient-to-b from-emerald-900 p-6",
-        className
+        className,
       )}
     >
       <div className="w-full mb-4 flex items-center justify-between">

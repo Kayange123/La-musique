@@ -10,10 +10,13 @@ Closes #
 
 ## Testing
 
+- [ ] `npm run format:check`
 - [ ] `npm run typecheck`
 - [ ] `npm run lint`
+- [ ] `npm test`
 - [ ] `npm run build`
-- [ ] Tested manually against a Supabase project
+- [ ] Added/updated tests for the behavior changed
+- [ ] Tested against a local Supabase
 
 ## Database changes
 

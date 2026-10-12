@@ -46,20 +46,24 @@ gh pr view --json number,url,state 2>/dev/null
 
 ## 2. Run the full gate
 
-There is no CI yet, so this gate is the only check before review:
+These are the checks CI runs (`.github/workflows/ci.yml`):
 
 ```bash
+npm run format:check
 npm run typecheck
 npm run lint
+npm test
 NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder npm run build
 ```
 
-The build values are non-secret placeholders. They prove the app
-compiles, not that it talks to Supabase. If any step fails, stop and
-report the output. Don't push red code, and don't skip hooks.
+The build values are the same non-secret placeholders CI uses. They
+prove the app compiles, not that it talks to Supabase. If any step
+fails, stop and report the output. Don't push red code, and don't skip
+hooks.
 
-When `format:check` and `test` scripts exist in `package.json`, run them
-too, before `typecheck`.
+For changes to auth, data access, uploads or migrations, also test
+against the local Supabase (`npx supabase start`, see the README) and
+say in the PR what you tested.
 
 ## 3. Push
 
@@ -100,10 +104,13 @@ commit-by-commit is recommended.>
 
 ## Testing
 
+- [x] `npm run format:check`
 - [x] `npm run typecheck`
 - [x] `npm run lint`
+- [x] `npm test`
 - [x] `npm run build`
-- [ ] Tested manually against a Supabase project
+- [ ] Added/updated tests for the behavior changed
+- [ ] Tested against a local Supabase
 
 <Mention any check that was NOT run or didn't pass, with why. Only tick
 boxes for checks that actually ran green in step 2. Say what was tested
@@ -141,5 +148,4 @@ gh pr create --base develop --head "$(git branch --show-current)" \
 ## 5. Report
 
 Give the user the PR URL, the base branch, and the issues it closes.
-Say that there is no CI on the repo yet, so the step 2 gate is the only
-automated check.
+Note that CI (format → typecheck → lint → test → build) runs on the PR.

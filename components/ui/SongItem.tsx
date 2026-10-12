@@ -8,7 +8,7 @@ import { defaultImage } from "@/common.constant";
 
 interface SongItemProps {
   song: ISong;
-  onClick: (id: string) => void;
+  onClick: (id: number) => void;
 }
 const SongItem = ({ song, onClick }: SongItemProps) => {
   const imagePath = useLoadImage(song);

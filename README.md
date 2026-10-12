@@ -2,7 +2,7 @@
 
 A music streaming app: browse and search songs, upload your own tracks with cover art, like songs, and listen with a persistent player.
 
-Built with Next.js 13 (App Router), Supabase (auth, Postgres, storage), Zustand, Tailwind CSS and Radix UI.
+Built with Next.js 16 (App Router), React 19, Supabase (auth, Postgres, storage), Zustand, Tailwind CSS and Radix UI.
 
 ## Features
 
@@ -21,6 +21,25 @@ npm install
 ```
 
 ### 2. Set up Supabase
+
+#### Local (recommended for development)
+
+With Docker running:
+
+```bash
+npx supabase start
+```
+
+This starts Supabase on your machine and applies everything in [supabase/migrations](supabase/migrations). Then put the local values in `.env.local`:
+
+```bash
+npx supabase status -o env
+# copy API_URL into NEXT_PUBLIC_SUPABASE_URL and ANON_KEY into NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
+
+Email confirmation is off locally, so you can sign up with any address. Supabase Studio runs at [http://127.0.0.1:54323](http://127.0.0.1:54323). Use `npx supabase db reset` to start from an empty database.
+
+#### Hosted
 
 Create a project at [supabase.com](https://supabase.com), then apply the schema in [supabase/migrations](supabase/migrations). It creates the tables, row-level security policies and the `songs` and `images` storage buckets.
 
@@ -51,8 +70,6 @@ cp .env.example .env.local
 
 Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from Project Settings → API.
 
-Images are served from your Supabase project, so update the domain in [next.config.js](next.config.js) to match your project URL.
-
 ### 4. Run
 
 ```bash
@@ -63,12 +80,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command         | What it does             |
-| --------------- | ------------------------ |
-| `npm run dev`   | Start the dev server     |
-| `npm run build` | Build for production     |
-| `npm run start` | Serve the production build |
-| `npm run lint`  | Run ESLint               |
+| Command             | What it does               |
+| ------------------- | -------------------------- |
+| `npm run dev`       | Start the dev server       |
+| `npm run build`     | Build for production       |
+| `npm run start`     | Serve the production build |
+| `npm run lint`      | Run ESLint                 |
+| `npm test`          | Run unit tests (Vitest)    |
+| `npm run typecheck` | Type-check with TypeScript |
+| `npm run format`    | Format with Prettier       |
 
 ## Project structure
 

@@ -33,13 +33,13 @@ const Sidebar = ({ children, songs }: SidebarProps) => {
         href: "/search",
       },
     ],
-    [pathname]
+    [pathname],
   );
   return (
     <div
       className={twMerge(
         "flex h-full",
-        player.activeId && "h-[calc(100%-85px)]"
+        player.activeId && "h-[calc(100%-85px)]",
       )}
     >
       <div className="hidden md:flex flex-col gap-y-2 w-[300px] h-full bg-black p-2">

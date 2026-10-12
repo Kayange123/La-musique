@@ -7,30 +7,23 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import toast from "react-hot-toast";
 import { useUser } from "@/hooks/useUser";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useRouter } from "next/navigation";
-
-const MAX_SONG_SIZE = 20 * 1024 * 1024;
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-// No SVG: it can carry scripts that run when its public URL is opened.
-const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-
-const toSafeFileName = (value: string) =>
-  value
-    .normalize("NFKD")
-    .replace(/[^a-zA-Z0-9-_]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .toLowerCase()
-    .slice(0, 50) || "untitled";
+import {
+  IMAGE_TYPES,
+  isValidImage,
+  isValidSong,
+  toSafeFileName,
+} from "@/lib/upload";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const uploadModal = useUploadModal();
-  const supabaseClient = useSupabaseClient();
+  const { supabaseClient } = useSupabase();
   const router = useRouter();
   const { user } = useUser();
 
-  const onChange = (open: boolean) => {
+  const onChange = () => {
     reset();
     uploadModal.onClose();
   };
@@ -43,13 +36,10 @@ const UploadModal = () => {
       if (!imageFile || !songFile || !user) {
         return toast.error("Missing fields");
       }
-      const isMp3 =
-        songFile.name.toLowerCase().endsWith(".mp3") ||
-        ["audio/mpeg", "audio/mp3"].includes(songFile.type);
-      if (!isMp3 || songFile.size > MAX_SONG_SIZE) {
+      if (!isValidSong(songFile)) {
         return toast.error("Song must be an mp3 file under 20MB");
       }
-      if (!IMAGE_TYPES.includes(imageFile.type) || imageFile.size > MAX_IMAGE_SIZE) {
+      if (!isValidImage(imageFile)) {
         return toast.error("Image must be a JPEG, PNG, WebP or GIF under 5MB");
       }
 
@@ -104,7 +94,7 @@ const UploadModal = () => {
       toast.success("song created successfully");
       reset();
       uploadModal.onClose();
-    } catch (error) {
+    } catch {
       toast.error("something went wrong");
     } finally {
       setIsLoading(false);
@@ -157,7 +147,7 @@ const UploadModal = () => {
           <Input
             id="image"
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
+            accept={IMAGE_TYPES.join(",")}
             disabled={isLoading}
             {...register("image", { required: true })}
           />

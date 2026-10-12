@@ -6,7 +6,7 @@ import { ISong } from "@/types";
 import Image from "next/image";
 
 interface MediaItemProps {
-  onClick: (id: string) => void;
+  onClick: (id: number) => void;
   song: ISong;
 }
 const MediaItem = ({ onClick, song }: MediaItemProps) => {
