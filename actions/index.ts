@@ -1,4 +1,4 @@
-import { ISong } from "@/types";
+import { IPlaylist, ISong } from "@/types";
 import { createClient, getUserId } from "@/lib/supabase/server";
 
 export const getSongs = async (): Promise<ISong[]> => {
@@ -101,5 +101,57 @@ export const getAccountSummary = async () => {
     email: typeof claims.email === "string" ? claims.email : null,
     uploadCount: uploads.count ?? 0,
     likeCount: likes.count ?? 0,
+  };
+};
+
+export const getPlaylists = async (): Promise<IPlaylist[]> => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  if (!userId) {
+    return [];
+  }
+
+  // RLS already limits this to the user's playlists; the filter keeps the
+  // intent explicit.
+  const { data, error } = await supabase
+    .from("playlists")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    return [];
+  }
+
+  return data ?? [];
+};
+
+// Returns null for a missing playlist and for someone else's (RLS hides
+// it), so the page can't reveal whether a playlist exists.
+export const getPlaylist = async (
+  playlistId: number,
+): Promise<{ playlist: IPlaylist; songs: ISong[] } | null> => {
+  const supabase = await createClient();
+
+  const { data: playlist } = await supabase
+    .from("playlists")
+    .select("*")
+    .eq("id", playlistId)
+    .maybeSingle();
+
+  if (!playlist) {
+    return null;
+  }
+
+  const { data: rows } = await supabase
+    .from("playlist_songs")
+    .select("songs(*)")
+    .eq("playlist_id", playlistId)
+    .order("added_at", { ascending: true });
+
+  return {
+    playlist,
+    songs: (rows ?? []).flatMap((row) => (row.songs ? [row.songs] : [])),
   };
 };

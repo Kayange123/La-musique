@@ -6,7 +6,7 @@ import SupabaseProvider from "@/providers/Supabase";
 import UserProvider from "@/providers/UserProvider";
 import ModalProvider from "@/providers/ModalProvider";
 import ToastProvider from "@/providers/ToastProvider";
-import { getSongsByUserId } from "@/actions";
+import { getPlaylists, getSongsByUserId } from "@/actions";
 import MediaPlayer from "@/components/player/MediaPlayer";
 import MobileNav from "@/components/nav/MobileNav";
 
@@ -22,7 +22,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const songs = await getSongsByUserId();
+  const [songs, playlists] = await Promise.all([
+    getSongsByUserId(),
+    getPlaylists(),
+  ]);
   return (
     <html lang="en">
       <body className={font.className}>
@@ -30,7 +33,9 @@ export default async function RootLayout({
         <SupabaseProvider>
           <UserProvider>
             <ModalProvider />
-            <Sidebar songs={songs}>{children}</Sidebar>
+            <Sidebar songs={songs} playlists={playlists}>
+              {children}
+            </Sidebar>
             <MediaPlayer />
             <MobileNav />
           </UserProvider>
