@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { RepeatMode, nextRepeatMode, shuffleIds } from "@/lib/queue";
+import {
+  RepeatMode,
+  nextRepeatMode,
+  removeFromQueue,
+  shuffleIds,
+} from "@/lib/queue";
 
 // PlayerContent is rebuilt for every song, so anything that should outlive
 // one song (volume, playback preferences) lives here instead.
@@ -20,6 +25,8 @@ interface PlayerStore {
   toggleMute: () => void;
   toggleShuffle: () => void;
   cycleRepeat: () => void;
+  // After a song is deleted: drops it and moves on if it was playing.
+  removeSong: (id: number) => void;
   reset: () => void;
 }
 
@@ -51,6 +58,15 @@ const usePlayer = create<PlayerStore>((set) => ({
       queue: state.shuffle ? state.ids : shuffleIds(state.ids, state.activeId),
     })),
   cycleRepeat: () => set((state) => ({ repeat: nextRepeatMode(state.repeat) })),
+  removeSong: (id: number) =>
+    set((state) => {
+      const { queue, activeId } = removeFromQueue(
+        state.queue,
+        state.activeId,
+        id,
+      );
+      return { queue, activeId, ids: state.ids.filter((x) => x !== id) };
+    }),
   // Clears the queue but keeps the listener's preferences.
   reset: () => set({ activeId: undefined, ids: [], queue: [] }),
 }));

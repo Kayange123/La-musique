@@ -8,6 +8,8 @@ import useUploadModal from "@/hooks/useUploadModal";
 import { ISong } from "@/types";
 import MediaItem from "../ui/MediaItem";
 import useOnPlay from "@/hooks/useOnPlay";
+import useSongActions from "@/hooks/useSongActions";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 interface LibraryProps {
   songs: ISong[];
@@ -17,6 +19,7 @@ const Library = ({ songs }: LibraryProps) => {
   const authModal = useAuthModal();
   const uploadModal = useUploadModal();
   const onPlay = useOnPlay(songs);
+  const songActions = useSongActions();
 
   const onClick = () => {
     if (!user) {
@@ -44,11 +47,29 @@ const Library = ({ songs }: LibraryProps) => {
       <div className="flex-col gap-y-2 mt-4 px-2">
         {songs.length !== 0 ? (
           songs.map((song) => (
-            <MediaItem
-              key={song?.id}
-              onClick={(id: number) => onPlay(id)}
-              song={song}
-            />
+            <div key={song.id} className="group flex items-center gap-x-1">
+              <MediaItem onClick={(id: number) => onPlay(id)} song={song} />
+              {user?.id === song.user_id && (
+                <div className="flex gap-x-1 pr-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
+                  <button
+                    type="button"
+                    onClick={() => songActions.openEdit(song)}
+                    aria-label={`Edit ${song.title}`}
+                    className="p-2 text-neutral-400 hover:text-white"
+                  >
+                    <FiEdit2 size={16} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => songActions.openDelete(song)}
+                    aria-label={`Delete ${song.title}`}
+                    className="p-2 text-neutral-400 hover:text-red-400"
+                  >
+                    <FiTrash2 size={16} aria-hidden="true" />
+                  </button>
+                </div>
+              )}
+            </div>
           ))
         ) : (
           <p className="text-neutral-500 text-xs pl-3">

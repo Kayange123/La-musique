@@ -56,3 +56,23 @@ export const shuffleIds = <T>(
 
 export const nextRepeatMode = (mode: RepeatMode): RepeatMode =>
   mode === "all" ? "one" : mode === "one" ? "off" : "all";
+
+// Removes a song from the queue, e.g. after it's deleted. Returns the new
+// queue and which song should play: the next one if the removed song was
+// playing, otherwise the current one unchanged.
+export const removeFromQueue = <T>(
+  queue: T[],
+  activeId: T | undefined,
+  removedId: T,
+): { queue: T[]; activeId: T | undefined } => {
+  const index = queue.indexOf(removedId);
+  if (index === -1) {
+    return { queue, activeId };
+  }
+  const rest = queue.filter((id) => id !== removedId);
+  if (activeId !== removedId) {
+    return { queue: rest, activeId };
+  }
+  // Play whatever moved into the removed song's place, wrapping round.
+  return { queue: rest, activeId: rest[index] ?? rest[0] };
+};
