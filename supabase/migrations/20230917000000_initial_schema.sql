@@ -158,12 +158,13 @@ create policy "Users can unlike songs." on public.liked_songs
 /**
  * STORAGE
  * Public buckets for audio and cover art. Signed-in users upload into them;
- * only the uploader can delete their files.
+ * only the uploader can delete their files. Images are limited to raster
+ * formats: SVG can carry scripts that run when its public URL is opened.
  */
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
   ('songs', 'songs', true, 20971520, array['audio/mpeg']),
-  ('images', 'images', true, 5242880, array['image/*'])
+  ('images', 'images', true, 5242880, array['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 on conflict (id) do nothing;
 
 create policy "Authenticated users can upload songs and images." on storage.objects

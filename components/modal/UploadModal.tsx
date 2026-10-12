@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 
 const MAX_SONG_SIZE = 20 * 1024 * 1024;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+// No SVG: it can carry scripts that run when its public URL is opened.
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 const toSafeFileName = (value: string) =>
   value
@@ -47,8 +49,8 @@ const UploadModal = () => {
       if (!isMp3 || songFile.size > MAX_SONG_SIZE) {
         return toast.error("Song must be an mp3 file under 20MB");
       }
-      if (!imageFile.type.startsWith("image/") || imageFile.size > MAX_IMAGE_SIZE) {
-        return toast.error("Image must be an image file under 5MB");
+      if (!IMAGE_TYPES.includes(imageFile.type) || imageFile.size > MAX_IMAGE_SIZE) {
+        return toast.error("Image must be a JPEG, PNG, WebP or GIF under 5MB");
       }
 
       const uniqueID = uniqid();
@@ -155,7 +157,7 @@ const UploadModal = () => {
           <Input
             id="image"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/gif"
             disabled={isLoading}
             {...register("image", { required: true })}
           />
