@@ -82,12 +82,13 @@ const Heading = ({ children, className }: HeadingProps) => {
               <Button onClick={handleLogout} className="bg-white px-3 py-2">
                 Logout
               </Button>
-              <Button
-                onClick={() => router.push("/account")}
-                className="bg-white p-3"
+              <Link
+                href="/account"
+                aria-label="Account"
+                className="rounded-full bg-white p-3 text-black hover:opacity-75 transition"
               >
-                <FaUserAlt size={20} />
-              </Button>
+                <FaUserAlt size={20} aria-hidden="true" />
+              </Link>
             </div>
           ) : (
             <>
