@@ -19,31 +19,26 @@ interface PlayerProps {
 const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const player = usePlayer();
   const [volume, setVolume] = useState(1);
+  const [previousVolume, setPreviousVolume] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const VolumeIcon: IconType = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
   const Icon: IconType = isPlaying ? BsPauseFill : BsPlayFill;
 
   const onPlayNext = () => {
-    if (player?.ids.length === 0) {
+    if (player.ids.length === 0) {
       return;
     }
-    const currentId = player.ids.findIndex((id) => id === player.activeId);
-    const nextSong = player.ids[currentId + 1];
-    if (!nextSong) {
-      player.setId(player.ids[0]);
-    }
-    return nextSong;
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const nextSong = player.ids[currentIndex + 1];
+    player.setId(nextSong ?? player.ids[0]);
   };
   const onPlayPrevious = () => {
-    if (player?.ids.length === 0) {
+    if (player.ids.length === 0) {
       return;
     }
-    const currentId = player.ids.findIndex((id) => id === player.activeId);
-    const prevSong = player.ids[currentId - 1];
-    if (!prevSong) {
-      player.setId(player.ids[player.ids.length - 1]);
-    }
-    return prevSong;
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const prevSong = player.ids[currentIndex - 1];
+    player.setId(prevSong ?? player.ids[player.ids.length - 1]);
   };
 
   const [play, { pause, sound }] = useSound(songUrl, {
@@ -73,10 +68,11 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
     }
   };
   const toggleMute = () => {
-    if (volume === 1) {
-      setVolume(0);
+    if (volume === 0) {
+      setVolume(previousVolume || 1);
     } else {
-      setVolume(1);
+      setPreviousVolume(volume);
+      setVolume(0);
     }
   };
   return (
