@@ -10,6 +10,17 @@ import { useUser } from "@/hooks/useUser";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 
+const MAX_SONG_SIZE = 20 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+const toSafeFileName = (value: string) =>
+  value
+    .normalize("NFKD")
+    .replace(/[^a-zA-Z0-9-_]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase()
+    .slice(0, 50) || "untitled";
+
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const uploadModal = useUploadModal();
@@ -30,23 +41,48 @@ const UploadModal = () => {
       if (!imageFile || !songFile || !user) {
         return toast.error("Missing fields");
       }
-      const uniqueID = uniqid();
+      const isMp3 =
+        songFile.name.toLowerCase().endsWith(".mp3") ||
+        ["audio/mpeg", "audio/mp3"].includes(songFile.type);
+      if (!isMp3 || songFile.size > MAX_SONG_SIZE) {
+        return toast.error("Song must be an mp3 file under 20MB");
+      }
+      if (!imageFile.type.startsWith("image/") || imageFile.size > MAX_IMAGE_SIZE) {
+        return toast.error("Image must be an image file under 5MB");
+      }
 
-      const { error: songError, data: songData } = await supabaseClient.storage
-        .from("songs")
-        .upload(`song-${data.title}-${uniqueID}`, songFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-      const { error: imageError, data: imageData } =
-        await supabaseClient.storage
-          .from("images")
-          .upload(`image-${data.title}-${uniqueID}`, imageFile, {
+      const uniqueID = uniqid();
+      const safeTitle = toSafeFileName(data.title);
+
+      const [songUpload, imageUpload] = await Promise.all([
+        supabaseClient.storage
+          .from("songs")
+          .upload(`song-${safeTitle}-${uniqueID}`, songFile, {
             cacheControl: "3600",
+            contentType: "audio/mpeg",
             upsert: false,
-          });
-      if (songError || imageError) {
-        setIsLoading(false);
+          }),
+        supabaseClient.storage
+          .from("images")
+          .upload(`image-${safeTitle}-${uniqueID}`, imageFile, {
+            cacheControl: "3600",
+            contentType: imageFile.type,
+            upsert: false,
+          }),
+      ]);
+
+      const removeUploads = () =>
+        Promise.all([
+          songUpload.data &&
+            supabaseClient.storage.from("songs").remove([songUpload.data.path]),
+          imageUpload.data &&
+            supabaseClient.storage
+              .from("images")
+              .remove([imageUpload.data.path]),
+        ]);
+
+      if (songUpload.error || imageUpload.error) {
+        await removeUploads();
         return toast.error("failed to upload image and song");
       }
 
@@ -54,16 +90,17 @@ const UploadModal = () => {
         user_id: user.id,
         title: data.title,
         author: data.author,
-        image_path: imageData.path,
-        song_path: songData.path,
+        image_path: imageUpload.data.path,
+        song_path: songUpload.data.path,
       });
       if (insertError) {
-        setIsLoading(false);
+        await removeUploads();
         return toast.error(insertError.message);
       }
 
       router.refresh();
       toast.success("song created successfully");
+      reset();
       uploadModal.onClose();
     } catch (error) {
       toast.error("something went wrong");
