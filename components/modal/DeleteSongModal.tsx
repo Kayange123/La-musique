@@ -8,6 +8,7 @@ import Button from "../ui/Button";
 import useSongActions from "@/hooks/useSongActions";
 import usePlayer from "@/hooks/usePlayer";
 import { useSupabase } from "@/providers/Supabase";
+import { deleteOwnSong } from "@/lib/songs";
 
 const DeleteSongModal = () => {
   const { song, mode, close } = useSongActions();
@@ -20,32 +21,12 @@ const DeleteSongModal = () => {
       return;
     }
     setIsDeleting(true);
-    // Delete the row first: RLS only matches the owner's songs, so an
-    // empty result means it wasn't theirs and no files are touched. Likes
-    // go with it through the foreign key's on delete cascade.
-    const { data, error } = await supabaseClient
-      .from("songs")
-      .delete()
-      .eq("id", song.id)
-      .select("song_path, image_path");
-
-    if (error || !data?.length) {
+    try {
+      await deleteOwnSong(supabaseClient, song.id);
+    } catch (error) {
       setIsDeleting(false);
-      return toast.error(error?.message ?? "Couldn't delete this song");
+      return toast.error((error as Error).message);
     }
-
-    const paths = data[0];
-    const removals = await Promise.all([
-      paths.song_path &&
-        supabaseClient.storage.from("songs").remove([paths.song_path]),
-      paths.image_path &&
-        supabaseClient.storage.from("images").remove([paths.image_path]),
-    ]);
-    if (removals.some((result) => result && result.error)) {
-      // The song is gone from the app; only storage cleanup failed.
-      console.error("Song deleted but files remain", removals);
-    }
-
     usePlayer.getState().removeSong(song.id);
     setIsDeleting(false);
     close();
