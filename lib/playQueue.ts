@@ -44,6 +44,12 @@ const step = (
   restart: change.activeId === state.activeId,
 });
 
+// Repeat one replays the song only when it ends; next still skips.
+const replaysCurrent = (
+  state: PlaybackState,
+  options: { reason: "manual" | "ended" },
+) => options.reason === "ended" && state.repeat === "one";
+
 // Moves on after the song ends ("ended") or the listener presses next
 // ("manual"). Queued songs play first; then the list continues from where
 // it left off. Returns null when playback should stop (end of the list
@@ -52,11 +58,7 @@ export const advance = (
   state: PlaybackState,
   options: { reason: "manual" | "ended" },
 ): Step | null => {
-  if (
-    options.reason === "ended" &&
-    state.repeat === "one" &&
-    state.activeId !== undefined
-  ) {
+  if (replaysCurrent(state, options) && state.activeId !== undefined) {
     return step(state, { activeId: state.activeId });
   }
 
@@ -101,6 +103,9 @@ export const queueSong = (
   return options.position === "next" ? [item, ...upNext] : [...upNext, item];
 };
 
+const isIndexIn = (list: unknown[], index: number) =>
+  index >= 0 && index < list.length;
+
 // Moves one queued item up (-1) or down (+1); out-of-range moves do
 // nothing.
 export const moveQueued = (
@@ -109,7 +114,7 @@ export const moveQueued = (
 ): QueuedItem[] => {
   const from = upNext.findIndex((item) => item.key === options.key);
   const to = from + options.offset;
-  if (from === -1 || to < 0 || to >= upNext.length) {
+  if (from === -1 || !isIndexIn(upNext, to)) {
     return upNext;
   }
   const result = [...upNext];
