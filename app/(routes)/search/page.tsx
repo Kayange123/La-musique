@@ -4,12 +4,13 @@ import SearchContent from "@/components/ui/SearchContent";
 import SearchInput from "@/components/ui/SearchInput";
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     title: string;
-  };
+  }>;
 }
 export const revalidate = 0;
-const SearchPage = async ({ searchParams }: PageProps) => {
+const SearchPage = async (props: PageProps) => {
+  const searchParams = await props.searchParams;
   const songs = await getSongsByTitle(searchParams.title);
   return (
     <div className="bg-neutral-900 rounded-lg w-full h-full overflow-hidden overflow-y-auto">

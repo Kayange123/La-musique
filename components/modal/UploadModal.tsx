@@ -30,7 +30,7 @@ const UploadModal = () => {
   const router = useRouter();
   const { user } = useUser();
 
-  const onChange = (open: boolean) => {
+  const onChange = () => {
     reset();
     uploadModal.onClose();
   };
@@ -104,7 +104,7 @@ const UploadModal = () => {
       toast.success("song created successfully");
       reset();
       uploadModal.onClose();
-    } catch (error) {
+    } catch {
       toast.error("something went wrong");
     } finally {
       setIsLoading(false);

@@ -19,7 +19,7 @@ export const createClient = async () => {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Server Components can't set cookies. The middleware refreshes
+            // Server Components can't set cookies. The proxy refreshes
             // the session, so this can be ignored.
           }
         },

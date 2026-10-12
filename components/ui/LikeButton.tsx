@@ -23,7 +23,6 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
 
   useEffect(() => {
     if (!user?.id) {
-      setIsLiked(false);
       return;
     }
 
@@ -39,12 +38,14 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
     fetchData();
   }, [user, songId, supabaseClient]);
 
-  const Icon: IconType = isLiked ? AiFillHeart : AiOutlineHeart;
+  // A like from a previous session never shows once logged out.
+  const liked = !!user && isLiked;
+  const Icon: IconType = liked ? AiFillHeart : AiOutlineHeart;
   const handleLike = async () => {
     if (!user) {
       return authModal.onOpen();
     }
-    if (isLiked) {
+    if (liked) {
       const { error } = await supabaseClient
         .from("liked_songs")
         .delete()
@@ -71,7 +72,7 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
   };
   return (
     <button onClick={handleLike} className="hover:opacity-75 transition">
-      <Icon color={isLiked ? "#22c55e" : "white"} size={25} />
+      <Icon color={liked ? "#22c55e" : "white"} size={25} />
     </button>
   );
 };
