@@ -4,6 +4,7 @@ import {
   cleanPlaylistName,
   createPlaylist,
   deletePlaylist,
+  parsePlaylistId,
   removeSongFromPlaylist,
   renamePlaylist,
 } from "./playlists";
@@ -149,4 +150,18 @@ describe("removeSongFromPlaylist", () => {
       removeSongFromPlaylist(fakeClient({ data: [] }).client, 2, 9),
     ).rejects.toThrow("Couldn't remove this song");
   });
+});
+
+describe("parsePlaylistId", () => {
+  it("accepts positive whole numbers", () => {
+    expect(parsePlaylistId("1")).toBe(1);
+    expect(parsePlaylistId("42")).toBe(42);
+  });
+
+  it.each(["0", "-1", "1.5", "abc", "", "1e3", " 7", "007"])(
+    "rejects %j",
+    (value) => {
+      expect(parsePlaylistId(value)).toBeNull();
+    },
+  );
 });

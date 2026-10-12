@@ -99,3 +99,7 @@ export const removeSongFromPlaylist = async (
     .select("song_id");
   expectRows(result, "Couldn't remove this song");
 };
+
+// Route params are strings; only positive whole numbers are valid ids.
+export const parsePlaylistId = (value: string): number | null =>
+  /^[1-9]\d{0,15}$/.test(value) ? Number(value) : null;
