@@ -18,8 +18,9 @@ interface PlayerProps {
 }
 const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const player = usePlayer();
-  const [volume, setVolume] = useState(1);
-  const [previousVolume, setPreviousVolume] = useState(1);
+  const volume = usePlayer((state) => state.volume);
+  const setVolume = usePlayer((state) => state.setVolume);
+  const toggleMute = usePlayer((state) => state.toggleMute);
   const [isPlaying, setIsPlaying] = useState(false);
   const VolumeIcon: IconType = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
   const Icon: IconType = isPlaying ? BsPauseFill : BsPlayFill;
@@ -61,14 +62,6 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
       play();
     } else {
       pause();
-    }
-  };
-  const toggleMute = () => {
-    if (volume === 0) {
-      setVolume(previousVolume || 1);
-    } else {
-      setPreviousVolume(volume);
-      setVolume(0);
     }
   };
   return (
