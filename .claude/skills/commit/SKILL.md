@@ -50,5 +50,6 @@ last line of the message.
 
 ## 5. Verify
 
-Before the first commit of a session, run `npm run typecheck` and
-`npm run lint`. Don't commit code that fails them.
+Before the first commit of a session, run `npm run format:check`,
+`npm run typecheck`, `npm run lint` and `npm test`. Don't commit code
+that fails them.

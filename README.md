@@ -2,7 +2,7 @@
 
 A music streaming app: browse and search songs, upload your own tracks with cover art, like songs, and listen with a persistent player.
 
-Built with Next.js 13 (App Router), Supabase (auth, Postgres, storage), Zustand, Tailwind CSS and Radix UI.
+Built with Next.js 16 (App Router), React 19, Supabase (auth, Postgres, storage), Zustand, Tailwind CSS and Radix UI.
 
 ## Features
 
@@ -80,12 +80,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command         | What it does               |
-| --------------- | -------------------------- |
-| `npm run dev`   | Start the dev server       |
-| `npm run build` | Build for production       |
-| `npm run start` | Serve the production build |
-| `npm run lint`  | Run ESLint                 |
+| Command             | What it does               |
+| ------------------- | -------------------------- |
+| `npm run dev`       | Start the dev server       |
+| `npm run build`     | Build for production       |
+| `npm run start`     | Serve the production build |
+| `npm run lint`      | Run ESLint                 |
+| `npm test`          | Run unit tests (Vitest)    |
+| `npm run typecheck` | Type-check with TypeScript |
+| `npm run format`    | Format with Prettier       |
 
 ## Project structure
 
