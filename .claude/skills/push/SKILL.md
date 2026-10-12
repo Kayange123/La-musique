@@ -136,6 +136,12 @@ gh pr create --base develop --head "$(git branch --show-current)" \
 - **Labels.** Mirror the issues' labels (`--label bug`, etc.).
 - **Draft.** Add `--draft` if the user passed it, or if the work is
   knowingly incomplete.
+- **Stacked work.** Prefer `--base develop` even when the branch builds
+  on another open PR: the diff shows the parent's commits until the
+  parent merges, then shrinks to this PR's own. Don't base a PR on
+  another feature branch. If the parent merges first and its branch
+  isn't deleted, GitHub doesn't retarget, and merging the child lands
+  it on the dead branch instead of `develop` (this happened to #22).
 - **Schema changes.** If the PR touches `supabase/migrations`, tick the
   second database box instead. "What changed and why" must then cover
   the RLS policies added or changed, and whether the migration is safe
