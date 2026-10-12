@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Container from "../ui/Container";
 import SidebarItem from "./SidebarItem";
 import Library from "../Library/Library";
-import { ISong } from "@/types";
+import { IPlaylist, ISong } from "@/types";
 import usePlayer from "@/hooks/usePlayer";
 import { twMerge } from "tailwind-merge";
 import { getNavRoutes } from "../nav/navRoutes";
@@ -12,9 +12,10 @@ import { getNavRoutes } from "../nav/navRoutes";
 interface SidebarProps {
   children: React.ReactNode;
   songs: ISong[];
+  playlists: IPlaylist[];
 }
 
-const Sidebar = ({ children, songs }: SidebarProps) => {
+const Sidebar = ({ children, songs, playlists }: SidebarProps) => {
   const pathname = usePathname();
   const player = usePlayer();
   const routes = useMemo(
@@ -38,7 +39,7 @@ const Sidebar = ({ children, songs }: SidebarProps) => {
           </nav>
         </Container>
         <Container className="overflow-y-auto h-full">
-          <Library songs={songs} />
+          <Library songs={songs} playlists={playlists} />
         </Container>
       </div>
       <main className="h-full flex-1 overflow-y-auto py-2">{children}</main>

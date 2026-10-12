@@ -5,7 +5,8 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { useUser } from "@/hooks/useUser";
 import useAuthModal from "@/hooks/useAuthModal";
 import useUploadModal from "@/hooks/useUploadModal";
-import { ISong } from "@/types";
+import { IPlaylist, ISong } from "@/types";
+import PlaylistList from "./PlaylistList";
 import MediaItem from "../ui/MediaItem";
 import useOnPlay from "@/hooks/useOnPlay";
 import useSongActions from "@/hooks/useSongActions";
@@ -13,8 +14,9 @@ import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 interface LibraryProps {
   songs: ISong[];
+  playlists: IPlaylist[];
 }
-const Library = ({ songs }: LibraryProps) => {
+const Library = ({ songs, playlists }: LibraryProps) => {
   const { user } = useUser();
   const authModal = useAuthModal();
   const uploadModal = useUploadModal();
@@ -29,7 +31,8 @@ const Library = ({ songs }: LibraryProps) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-4">
+      <PlaylistList playlists={playlists} />
       <div className="flex px-5 items-center pt-4 justify-between">
         <div className="inline-flex gap-x-2 items-center">
           <TbPlaylist size={25} className="text-neutral-400" />
