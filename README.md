@@ -39,6 +39,8 @@ npx supabase db pull
 npx supabase migration repair 20230917000000 --status applied
 ```
 
+Then run `npx supabase db push` to apply the later migrations, such as the image type restriction.
+
 To enable Google or Facebook sign-in, configure the providers under Authentication → Providers.
 
 ### 3. Configure environment variables
