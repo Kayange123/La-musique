@@ -49,7 +49,10 @@ const UploadModal = () => {
       if (!isMp3 || songFile.size > MAX_SONG_SIZE) {
         return toast.error("Song must be an mp3 file under 20MB");
       }
-      if (!IMAGE_TYPES.includes(imageFile.type) || imageFile.size > MAX_IMAGE_SIZE) {
+      if (
+        !IMAGE_TYPES.includes(imageFile.type) ||
+        imageFile.size > MAX_IMAGE_SIZE
+      ) {
         return toast.error("Image must be a JPEG, PNG, WebP or GIF under 5MB");
       }
 

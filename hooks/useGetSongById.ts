@@ -45,7 +45,7 @@ const useGetSongById = (id?: number) => {
       isLoading,
       song,
     }),
-    [isLoading, song]
+    [isLoading, song],
   );
 };
 

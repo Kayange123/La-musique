@@ -15,7 +15,7 @@ const SidebarItem = ({ icon: Icon, label, href, active }: SidebarItemProps) => {
       href={href}
       className={twMerge(
         "flex flex-row h-auto items-center w-full gap-x-4 text-base font-medium cursor-pointer transition hover:text-white text-neutral-400",
-        active && "text-white"
+        active && "text-white",
       )}
     >
       <Icon size={25} />

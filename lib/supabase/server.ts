@@ -16,7 +16,7 @@ export const createClient = async () => {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, options),
             );
           } catch {
             // Server Components can't set cookies. The proxy refreshes
@@ -24,13 +24,13 @@ export const createClient = async () => {
           }
         },
       },
-    }
+    },
   );
 };
 
 // Verifies the access token instead of trusting the session cookie.
 export const getUserId = async (
-  supabase: Awaited<ReturnType<typeof createClient>>
+  supabase: Awaited<ReturnType<typeof createClient>>,
 ) => {
   const { data } = await supabase.auth.getClaims();
   return data?.claims?.sub ?? null;

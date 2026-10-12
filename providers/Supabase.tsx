@@ -13,7 +13,7 @@ type SupabaseContextType = {
 };
 
 const SupabaseContext = createContext<SupabaseContextType | undefined>(
-  undefined
+  undefined,
 );
 
 interface SupabaseProviderProps {

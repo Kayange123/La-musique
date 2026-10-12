@@ -80,12 +80,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command         | What it does             |
-| --------------- | ------------------------ |
-| `npm run dev`   | Start the dev server     |
-| `npm run build` | Build for production     |
+| Command         | What it does               |
+| --------------- | -------------------------- |
+| `npm run dev`   | Start the dev server       |
+| `npm run build` | Build for production       |
 | `npm run start` | Serve the production build |
-| `npm run lint`  | Run ESLint               |
+| `npm run lint`  | Run ESLint                 |
 
 ## Project structure
 

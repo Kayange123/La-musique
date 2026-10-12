@@ -37,7 +37,7 @@ const Heading = ({ children, className }: HeadingProps) => {
     <div
       className={twMerge(
         "h-fit bg-gradient-to-b from-emerald-900 p-6",
-        className
+        className,
       )}
     >
       <div className="w-full mb-4 flex items-center justify-between">

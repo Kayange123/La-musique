@@ -7,14 +7,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     <input
       className={twMerge(
         "flex w-full rounded-md border bg-neutral-700 border-transparent p-3 text-sm file:border-0 file:bg-transparent file:font-medium placeholder:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none",
-        className
+        className,
       )}
       type={type}
       disabled={disabled}
       ref={ref}
       {...props}
     />
-  )
+  ),
 );
 
 Input.displayName = "Input";

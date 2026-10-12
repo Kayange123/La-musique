@@ -14,18 +14,18 @@ export const updateSession = async (request: NextRequest) => {
         },
         setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
           Object.entries(headers).forEach(([key, value]) =>
-            response.headers.set(key, value)
+            response.headers.set(key, value),
           );
         },
       },
-    }
+    },
   );
 
   // Refreshes the session if it has expired. Nothing may run between
