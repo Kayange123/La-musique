@@ -10,7 +10,10 @@ import { useUser } from "@/hooks/useUser";
 import { useSupabase } from "@/providers/Supabase";
 import { useRouter } from "next/navigation";
 import {
+  AUDIO_ACCEPT,
+  AUDIO_FORMATS,
   IMAGE_TYPES,
+  getAudioExtension,
   isValidImage,
   isValidSong,
   toSafeFileName,
@@ -36,8 +39,11 @@ const UploadModal = () => {
       if (!imageFile || !songFile || !user) {
         return toast.error("Missing fields");
       }
-      if (!isValidSong(songFile)) {
-        return toast.error("Song must be an mp3 file under 20MB");
+      const extension = getAudioExtension(songFile);
+      if (!extension || !isValidSong(songFile)) {
+        return toast.error(
+          "Song must be MP3, M4A, AAC, WAV, OGG or FLAC, under 50MB",
+        );
       }
       if (!isValidImage(imageFile)) {
         return toast.error("Image must be a JPEG, PNG, WebP or GIF under 5MB");
@@ -49,9 +55,10 @@ const UploadModal = () => {
       const [songUpload, imageUpload] = await Promise.all([
         supabaseClient.storage
           .from("songs")
-          .upload(`song-${safeTitle}-${uniqueID}`, songFile, {
+          // The extension tells the player the format later.
+          .upload(`song-${safeTitle}-${uniqueID}.${extension}`, songFile, {
             cacheControl: "3600",
-            contentType: "audio/mpeg",
+            contentType: AUDIO_FORMATS.get(extension),
             upsert: false,
           }),
         supabaseClient.storage
@@ -114,7 +121,7 @@ const UploadModal = () => {
       isopen={uploadModal.isOpen}
       onChange={onChange}
       title="Add a new song"
-      description="Upload an mp3 file..."
+      description="Upload a song: MP3, M4A, AAC, WAV, OGG or FLAC."
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -137,7 +144,7 @@ const UploadModal = () => {
           <Input
             id="song"
             type="file"
-            accept=".mp3"
+            accept={AUDIO_ACCEPT}
             disabled={isLoading}
             {...register("song", { required: true })}
           />

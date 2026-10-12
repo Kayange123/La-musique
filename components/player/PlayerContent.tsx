@@ -17,6 +17,7 @@ import Slider from "../ui/Slider";
 import SeekBar from "./SeekBar";
 import useLoadImage from "@/hooks/useLoadImage";
 import { getShortcutAction } from "@/lib/shortcuts";
+import { getPlaybackFormat } from "@/lib/upload";
 import usePlayer from "@/hooks/usePlayer";
 import { getAutoNextId, getNextId, getPreviousId } from "@/lib/queue";
 import useSound from "use-sound";
@@ -75,7 +76,7 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
       goTo(getAutoNextId(queue, activeId, repeat));
     },
     onpause: () => setIsPlaying(false),
-    format: ["mp3"],
+    format: [getPlaybackFormat(song.song_path ?? "")],
   });
 
   useEffect(() => {

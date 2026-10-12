@@ -4,6 +4,7 @@ import {
   getNextId,
   getPreviousId,
   nextRepeatMode,
+  removeFromQueue,
   shuffleIds,
 } from "./queue";
 
@@ -106,5 +107,42 @@ describe("nextRepeatMode", () => {
     expect(nextRepeatMode("all")).toBe("one");
     expect(nextRepeatMode("one")).toBe("off");
     expect(nextRepeatMode("off")).toBe("all");
+  });
+});
+
+describe("removeFromQueue", () => {
+  it("leaves the queue alone when the song isn't in it", () => {
+    expect(removeFromQueue([1, 2, 3], 2, 9)).toEqual({
+      queue: [1, 2, 3],
+      activeId: 2,
+    });
+  });
+
+  it("keeps playing the current song when another is removed", () => {
+    expect(removeFromQueue([1, 2, 3], 2, 3)).toEqual({
+      queue: [1, 2],
+      activeId: 2,
+    });
+  });
+
+  it("moves to the next song when the playing one is removed", () => {
+    expect(removeFromQueue([1, 2, 3], 2, 2)).toEqual({
+      queue: [1, 3],
+      activeId: 3,
+    });
+  });
+
+  it("wraps to the first song when the last one is removed while playing", () => {
+    expect(removeFromQueue([1, 2, 3], 3, 3)).toEqual({
+      queue: [1, 2],
+      activeId: 1,
+    });
+  });
+
+  it("stops when the only song is removed", () => {
+    expect(removeFromQueue([5], 5, 5)).toEqual({
+      queue: [],
+      activeId: undefined,
+    });
   });
 });
