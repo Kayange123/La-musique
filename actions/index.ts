@@ -76,3 +76,30 @@ export const getLikedSongs = async (): Promise<ISong[]> => {
 
   return data.flatMap((item) => (item.songs ? [item.songs] : []));
 };
+
+export const getAccountSummary = async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+
+  if (!claims?.sub) {
+    return null;
+  }
+
+  const [uploads, likes] = await Promise.all([
+    supabase
+      .from("songs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", claims.sub),
+    supabase
+      .from("liked_songs")
+      .select("song_id", { count: "exact", head: true })
+      .eq("user_id", claims.sub),
+  ]);
+
+  return {
+    email: typeof claims.email === "string" ? claims.email : null,
+    uploadCount: uploads.count ?? 0,
+    likeCount: likes.count ?? 0,
+  };
+};

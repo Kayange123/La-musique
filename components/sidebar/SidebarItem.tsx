@@ -13,12 +13,13 @@ const SidebarItem = ({ icon: Icon, label, href, active }: SidebarItemProps) => {
   return (
     <Link
       href={href}
+      aria-current={active ? "page" : undefined}
       className={twMerge(
         "flex flex-row h-auto items-center w-full gap-x-4 text-base font-medium cursor-pointer transition hover:text-white text-neutral-400",
         active && "text-white",
       )}
     >
-      <Icon size={25} />
+      <Icon size={25} aria-hidden="true" />
       <p className="w-full truncate">{label}</p>
     </Link>
   );
