@@ -15,3 +15,44 @@ export const getPreviousId = <T>(ids: T[], activeId?: T): T | undefined => {
   const currentIndex = ids.findIndex((id) => id === activeId);
   return ids[currentIndex - 1] ?? ids[ids.length - 1];
 };
+
+export type RepeatMode = "off" | "all" | "one";
+
+// What plays when a song ends on its own. Pressing next always wraps,
+// whatever the repeat mode, so the listener is never stuck at the end.
+export const getAutoNextId = <T>(
+  ids: T[],
+  activeId: T | undefined,
+  repeat: RepeatMode,
+): T | undefined => {
+  if (repeat === "one") {
+    return activeId;
+  }
+  const currentIndex = ids.findIndex((id) => id === activeId);
+  const isLast = currentIndex === ids.length - 1;
+  if (repeat === "off" && isLast) {
+    return undefined;
+  }
+  return getNextId(ids, activeId);
+};
+
+// Shuffles the queue with the current song first, so previous goes back
+// through the songs actually heard. Takes the random source as a
+// parameter so tests can make it deterministic.
+export const shuffleIds = <T>(
+  ids: T[],
+  firstId?: T,
+  random: () => number = Math.random,
+): T[] => {
+  const rest = ids.filter((id) => id !== firstId);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return firstId !== undefined && ids.includes(firstId)
+    ? [firstId, ...rest]
+    : rest;
+};
+
+export const nextRepeatMode = (mode: RepeatMode): RepeatMode =>
+  mode === "all" ? "one" : mode === "one" ? "off" : "all";
