@@ -35,10 +35,18 @@ const expectRows = (
   }
 };
 
-export const createPlaylist = async (supabase: Client, name: string) => {
+// Named fields so ids can't be swapped: playlist and song ids are both
+// numbers.
+type PlaylistRef = { id: number };
+type PlaylistEntry = { playlistId: number; songId: number };
+
+export const createPlaylist = async (
+  supabase: Client,
+  playlist: { name: string },
+) => {
   const { data, error } = await supabase
     .from("playlists")
-    .insert({ name: cleanPlaylistName(name) })
+    .insert({ name: cleanPlaylistName(playlist.name) })
     .select("id")
     .single();
   if (error) {
@@ -47,36 +55,42 @@ export const createPlaylist = async (supabase: Client, name: string) => {
   return data.id;
 };
 
-export const renamePlaylist = async (
-  supabase: Client,
-  playlistId: number,
-  name: string,
-) => {
-  const result = await supabase
-    .from("playlists")
-    .update({ name: cleanPlaylistName(name) })
-    .eq("id", playlistId)
-    .select("id");
-  expectRows(result, "Couldn't rename this playlist");
-};
+// Runs an update or delete on one of the user's playlists, failing if RLS
+// matched nothing.
+const changeOwnPlaylist = async (
+  query: PromiseLike<{
+    data: unknown[] | null;
+    error: { message: string } | null;
+  }>,
+  failure: string,
+) => expectRows(await query, failure);
 
-export const deletePlaylist = async (supabase: Client, playlistId: number) => {
-  const result = await supabase
-    .from("playlists")
-    .delete()
-    .eq("id", playlistId)
-    .select("id");
-  expectRows(result, "Couldn't delete this playlist");
-};
+export const renamePlaylist = (
+  supabase: Client,
+  playlist: PlaylistRef & { name: string },
+) =>
+  changeOwnPlaylist(
+    supabase
+      .from("playlists")
+      .update({ name: cleanPlaylistName(playlist.name) })
+      .eq("id", playlist.id)
+      .select("id"),
+    "Couldn't rename this playlist",
+  );
+
+export const deletePlaylist = (supabase: Client, playlist: PlaylistRef) =>
+  changeOwnPlaylist(
+    supabase.from("playlists").delete().eq("id", playlist.id).select("id"),
+    "Couldn't delete this playlist",
+  );
 
 export const addSongToPlaylist = async (
   supabase: Client,
-  playlistId: number,
-  songId: number,
+  entry: PlaylistEntry,
 ) => {
   const { error } = await supabase
     .from("playlist_songs")
-    .insert({ playlist_id: playlistId, song_id: songId });
+    .insert({ playlist_id: entry.playlistId, song_id: entry.songId });
   if (error?.code === UNIQUE_VIOLATION) {
     throw new Error("Already in this playlist");
   }
@@ -88,14 +102,13 @@ export const addSongToPlaylist = async (
 // Only takes the song out of the playlist; the song itself stays.
 export const removeSongFromPlaylist = async (
   supabase: Client,
-  playlistId: number,
-  songId: number,
+  entry: PlaylistEntry,
 ) => {
   const result = await supabase
     .from("playlist_songs")
     .delete()
-    .eq("playlist_id", playlistId)
-    .eq("song_id", songId)
+    .eq("playlist_id", entry.playlistId)
+    .eq("song_id", entry.songId)
     .select("song_id");
   expectRows(result, "Couldn't remove this song");
 };
@@ -104,11 +117,11 @@ export const removeSongFromPlaylist = async (
 export const parsePlaylistId = (value: string): number | null =>
   /^[1-9]\d{0,15}$/.test(value) ? Number(value) : null;
 
-export const listPlaylists = async (supabase: Client, userId: string) => {
+export const listPlaylists = async (supabase: Client, user: { id: string }) => {
   const { data, error } = await supabase
     .from("playlists")
     .select("*")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: true });
   if (error) {
     throw new Error(error.message);

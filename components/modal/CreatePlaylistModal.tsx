@@ -15,7 +15,7 @@ const CreatePlaylistModal = () => {
 
   const onSubmit = async (name: string) => {
     try {
-      const id = await createPlaylist(supabaseClient, name);
+      const id = await createPlaylist(supabaseClient, { name });
       close();
       toast.success("Playlist created");
       router.push(`/playlist/${id}`);

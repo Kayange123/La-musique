@@ -68,14 +68,14 @@ describe("cleanPlaylistName", () => {
 describe("createPlaylist", () => {
   it("inserts the trimmed name and returns the new id", async () => {
     const { client, calls } = fakeClient({ data: { id: 7 } });
-    await expect(createPlaylist(client, " Chill ")).resolves.toBe(7);
+    await expect(createPlaylist(client, { name: " Chill " })).resolves.toBe(7);
     expect(calls.table).toBe("playlists");
     expect(calls.payload).toEqual({ name: "Chill" });
   });
 
   it("doesn't call the database for a blank name", async () => {
     const { client, calls } = fakeClient({ data: { id: 7 } });
-    await expect(createPlaylist(client, "")).rejects.toThrow();
+    await expect(createPlaylist(client, { name: "" })).rejects.toThrow();
     expect(calls.payload).toBeUndefined();
   });
 });
@@ -83,19 +83,19 @@ describe("createPlaylist", () => {
 describe("renamePlaylist and deletePlaylist", () => {
   it("succeed when RLS matched the row", async () => {
     const { client, calls } = fakeClient({ data: [{ id: 3 }] });
-    await renamePlaylist(client, 3, "New name");
+    await renamePlaylist(client, { id: 3, name: "New name" });
     expect(calls.filters).toEqual([["id", 3]]);
     await expect(
-      deletePlaylist(fakeClient({ data: [{ id: 3 }] }).client, 3),
+      deletePlaylist(fakeClient({ data: [{ id: 3 }] }).client, { id: 3 }),
     ).resolves.toBeUndefined();
   });
 
   it("fail when RLS matched nothing (someone else's playlist)", async () => {
     await expect(
-      renamePlaylist(fakeClient({ data: [] }).client, 3, "x"),
+      renamePlaylist(fakeClient({ data: [] }).client, { id: 3, name: "x" }),
     ).rejects.toThrow("Couldn't rename this playlist");
     await expect(
-      deletePlaylist(fakeClient({ data: [] }).client, 3),
+      deletePlaylist(fakeClient({ data: [] }).client, { id: 3 }),
     ).rejects.toThrow("Couldn't delete this playlist");
   });
 
@@ -103,7 +103,7 @@ describe("renamePlaylist and deletePlaylist", () => {
     await expect(
       deletePlaylist(
         fakeClient({ error: { message: "network down" } }).client,
-        3,
+        { id: 3 },
       ),
     ).rejects.toThrow("network down");
   });
@@ -112,7 +112,7 @@ describe("renamePlaylist and deletePlaylist", () => {
 describe("addSongToPlaylist", () => {
   it("inserts the playlist and song ids", async () => {
     const { client, calls } = fakeClient({});
-    await addSongToPlaylist(client, 2, 9);
+    await addSongToPlaylist(client, { playlistId: 2, songId: 9 });
     expect(calls.table).toBe("playlist_songs");
     expect(calls.payload).toEqual({ playlist_id: 2, song_id: 9 });
   });
@@ -121,25 +121,25 @@ describe("addSongToPlaylist", () => {
     const { client } = fakeClient({
       error: { message: "duplicate key value", code: "23505" },
     });
-    await expect(addSongToPlaylist(client, 2, 9)).rejects.toThrow(
-      "Already in this playlist",
-    );
+    await expect(
+      addSongToPlaylist(client, { playlistId: 2, songId: 9 }),
+    ).rejects.toThrow("Already in this playlist");
   });
 
   it("passes other errors through, e.g. RLS refusing another user's playlist", async () => {
     const { client } = fakeClient({
       error: { message: "new row violates row-level security", code: "42501" },
     });
-    await expect(addSongToPlaylist(client, 2, 9)).rejects.toThrow(
-      "row-level security",
-    );
+    await expect(
+      addSongToPlaylist(client, { playlistId: 2, songId: 9 }),
+    ).rejects.toThrow("row-level security");
   });
 });
 
 describe("removeSongFromPlaylist", () => {
   it("filters by both playlist and song", async () => {
     const { client, calls } = fakeClient({ data: [{ song_id: 9 }] });
-    await removeSongFromPlaylist(client, 2, 9);
+    await removeSongFromPlaylist(client, { playlistId: 2, songId: 9 });
     expect(calls.filters).toEqual([
       ["playlist_id", 2],
       ["song_id", 9],
@@ -148,7 +148,10 @@ describe("removeSongFromPlaylist", () => {
 
   it("fails when nothing was removed", async () => {
     await expect(
-      removeSongFromPlaylist(fakeClient({ data: [] }).client, 2, 9),
+      removeSongFromPlaylist(fakeClient({ data: [] }).client, {
+        playlistId: 2,
+        songId: 9,
+      }),
     ).rejects.toThrow("Couldn't remove this song");
   });
 });
@@ -171,13 +174,15 @@ describe("listPlaylists", () => {
   it("returns the user's playlists", async () => {
     const rows = [{ id: 1, name: "A" }];
     const { client, calls } = fakeClient({ data: rows });
-    await expect(listPlaylists(client, "user-1")).resolves.toEqual(rows);
+    await expect(listPlaylists(client, { id: "user-1" })).resolves.toEqual(
+      rows,
+    );
     expect(calls.filters).toEqual([["user_id", "user-1"]]);
   });
 
   it("passes errors through", async () => {
     const { client } = fakeClient({ error: { message: "network down" } });
-    await expect(listPlaylists(client, "user-1")).rejects.toThrow(
+    await expect(listPlaylists(client, { id: "user-1" })).rejects.toThrow(
       "network down",
     );
   });

@@ -28,7 +28,7 @@ const AddToPlaylistForm = ({ songId }: { songId: number }) => {
       return;
     }
     let cancelled = false;
-    listPlaylists(supabaseClient, user.id)
+    listPlaylists(supabaseClient, user)
       .then((result) => !cancelled && setPlaylists(result))
       .catch((error: Error) => toast.error(error.message));
     return () => {
@@ -38,7 +38,7 @@ const AddToPlaylistForm = ({ songId }: { songId: number }) => {
 
   const addTo = async (playlistId: number, name: string) => {
     try {
-      await addSongToPlaylist(supabaseClient, playlistId, songId);
+      await addSongToPlaylist(supabaseClient, { playlistId, songId });
       close();
       toast.success(`Added to ${name}`);
       router.refresh();
@@ -49,7 +49,7 @@ const AddToPlaylistForm = ({ songId }: { songId: number }) => {
 
   const createAndAdd = async (name: string) => {
     try {
-      const id = await createPlaylist(supabaseClient, name);
+      const id = await createPlaylist(supabaseClient, { name });
       await addTo(id, name.trim());
     } catch (error) {
       toast.error((error as Error).message);

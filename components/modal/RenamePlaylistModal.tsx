@@ -18,7 +18,7 @@ const RenamePlaylistModal = () => {
       return;
     }
     try {
-      await renamePlaylist(supabaseClient, playlist.id, name);
+      await renamePlaylist(supabaseClient, { id: playlist.id, name });
       close();
       toast.success("Playlist renamed");
       router.refresh();

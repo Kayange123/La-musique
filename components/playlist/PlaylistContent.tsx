@@ -27,7 +27,10 @@ const PlaylistContent = ({ playlist, songs }: PlaylistContentProps) => {
   // it is: the song still exists and can finish playing.
   const onRemove = async (song: ISong) => {
     try {
-      await removeSongFromPlaylist(supabaseClient, playlist.id, song.id);
+      await removeSongFromPlaylist(supabaseClient, {
+        playlistId: playlist.id,
+        songId: song.id,
+      });
       toast.success(`Removed ${song.title}`);
       router.refresh();
     } catch (error) {

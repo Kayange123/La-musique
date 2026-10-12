@@ -21,7 +21,7 @@ const DeletePlaylistModal = () => {
     }
     setIsDeleting(true);
     try {
-      await deletePlaylist(supabaseClient, playlist.id);
+      await deletePlaylist(supabaseClient, playlist);
     } catch (error) {
       setIsDeleting(false);
       return toast.error((error as Error).message);
