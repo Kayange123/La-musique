@@ -68,5 +68,6 @@ describe("getShortcutAction", () => {
   it("ignores unrelated keys", () => {
     expect(press("x")).toBeNull();
     expect(press("Enter")).toBeNull();
+    expect(press("constructor")).toBeNull();
   });
 });
