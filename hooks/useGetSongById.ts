@@ -21,11 +21,11 @@ const useGetSongById = (id?: string) => {
         .eq("id", id)
         .single();
 
+      setIsLoading(false);
       if (error) {
         return toast.error(error.message);
       }
       setSong(data as ISong);
-      setIsLoading(false);
     };
     fetchSong();
   }, [id, supabaseClient]);

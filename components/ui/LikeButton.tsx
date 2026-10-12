@@ -5,8 +5,7 @@ import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
-import { data } from "autoprefixer";
-import toast from "react-hot-toast/headless";
+import toast from "react-hot-toast";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { IconType } from "react-icons";
 
@@ -24,6 +23,7 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
 
   useEffect(() => {
     if (!user?.id) {
+      setIsLiked(false);
       return;
     }
 
@@ -33,11 +33,8 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
         .select("*")
         .eq("user_id", user.id)
         .eq("song_id", songId)
-        .single();
-      if (!error && data) {
-        toast.success("liked");
-        setIsLiked(true);
-      }
+        .maybeSingle();
+      setIsLiked(!error && !!data);
     };
     fetchData();
   }, [user, songId, supabaseClient]);
