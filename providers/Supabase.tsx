@@ -2,6 +2,7 @@
 
 import { Database } from "@/types_db";
 import { createClient } from "@/lib/supabase/client";
+import usePlayer from "@/hooks/usePlayer";
 import { Session, SupabaseClient, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -29,9 +30,15 @@ const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     // The first event is INITIAL_SESSION, so this also sets the starting state.
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((_event, newSession) => {
+    } = supabaseClient.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession);
       setIsLoading(false);
+      // Covers the Logout button, an expired session and logging out in
+      // another tab. Clearing the queue unmounts the player, which stops
+      // and unloads the sound.
+      if (event === "SIGNED_OUT") {
+        usePlayer.getState().reset();
+      }
     });
 
     return () => subscription.unsubscribe();

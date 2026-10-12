@@ -19,14 +19,15 @@ const MediaItem = ({ onClick, song }: MediaItemProps) => {
     // TODO: Turn on player
   };
   return (
-    <div
+    <button
+      type="button"
       onClick={handleClick}
-      className="flex items-center gap-x-3 cursor-pointer hover:bg-neutral-800/80 w-full p-2 rounded-md"
+      className="flex text-left items-center gap-x-3 cursor-pointer hover:bg-neutral-800/80 w-full p-2 rounded-md"
     >
       <div className="relative rounded-md min-h-[50px] max-w-[50px] overflow-hidden h-full w-full">
         <Image
           src={imageUrl || defaultImage}
-          alt={"song by " + song?.title}
+          alt=""
           className="object-cover"
           fill
         />
@@ -37,7 +38,7 @@ const MediaItem = ({ onClick, song }: MediaItemProps) => {
         </p>
         <p className="text-neutral-400 text-sm truncate">{song?.author}</p>
       </div>
-    </div>
+    </button>
   );
 };
 

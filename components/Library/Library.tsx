@@ -32,11 +32,14 @@ const Library = ({ songs }: LibraryProps) => {
           <TbPlaylist size={25} className="text-neutral-400" />
           <p className="text-base font-medium text-neutral-500">Your library</p>
         </div>
-        <AiOutlinePlus
+        <button
+          type="button"
           onClick={onClick}
-          size={25}
-          className="cursor-pointer text-neutral-500 hover:text-white transition"
-        />
+          aria-label="Upload a song"
+          className="text-neutral-500 hover:text-white transition"
+        >
+          <AiOutlinePlus size={25} />
+        </button>
       </div>
       <div className="flex-col gap-y-2 mt-4 px-2">
         {songs.length !== 0 ? (
