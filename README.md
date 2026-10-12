@@ -7,10 +7,14 @@ Built with Next.js 16 (App Router), React 19, Supabase (auth, Postgres, storage)
 ## Features
 
 - Email, magic-link, Google and Facebook sign-in (Supabase Auth)
-- Upload mp3 songs (up to 20MB) with a cover image (up to 5MB)
+- Upload songs (MP3, M4A, AAC, WAV, OGG or FLAC, up to 50MB) with a cover image (JPEG, PNG, WebP or GIF, up to 5MB)
+- Edit or delete your own songs from your library
 - Latest songs on the home page, search by title
 - Like songs and play them from your Liked Songs playlist
-- Player with play/pause, next/previous, auto-advance and volume
+- Player with seek bar, shuffle, repeat (all, one, off), volume and mute
+- Keyboard shortcuts: Space or K to play/pause, ←/→ to seek 5 seconds, Shift+N / Shift+P for next/previous, M to mute
+- Lock-screen and media-key controls (Media Session API)
+- Mobile layout with a bottom tab bar, and an account page
 
 ## Getting started
 
