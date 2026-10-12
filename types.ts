@@ -7,3 +7,4 @@ export type IPrice = Tables<"prices"> & { products?: IProduct | null };
 export type ISubscription = Tables<"subscriptions"> & {
   prices?: IPrice | null;
 };
+export type IPlaylist = Tables<"playlists">;

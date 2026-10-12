@@ -77,6 +77,62 @@ export type Database = {
           },
         ];
       };
+      playlist_songs: {
+        Row: {
+          added_at: string;
+          playlist_id: number;
+          song_id: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          added_at?: string;
+          playlist_id: number;
+          song_id: number;
+        };
+        Update: {
+          added_at?: string;
+          playlist_id?: number;
+          song_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "playlist_songs_playlist_id_fkey";
+            columns: ["playlist_id"];
+            isOneToOne: false;
+            referencedRelation: "playlists";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "playlist_songs_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      playlists: {
+        Row: {
+          created_at: string;
+          id: number;
+          name: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: number;
+          name: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       prices: {
         Row: {
           active: boolean | null;
