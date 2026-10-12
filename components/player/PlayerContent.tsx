@@ -181,6 +181,8 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
           // As above.
         }
       }
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.playbackState = "none";
     };
   }, [song.title, song.author, imageUrl]);
 
