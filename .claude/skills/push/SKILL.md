@@ -136,8 +136,7 @@ gh pr create --base develop --head "$(git branch --show-current)" \
 - **Authorization.** If the PR touches RLS policies, storage policies,
   or the auth middleware, say what a signed-out user and a different
   signed-in user can and can't do afterwards.
-- Append any attribution line your environment requires to the end of
-  the body.
+- Don't add `Co-Authored-By` lines to the body.
 
 ## 5. Report
 

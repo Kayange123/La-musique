@@ -45,8 +45,8 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
 Scopes follow the area: `player`, `likes`, `upload`, `search`, `auth`,
 `data`, `db`, `deps`, `setup`.
 
-Add any attribution trailer your environment requires after the
-`Refs` footer.
+Don't add `Co-Authored-By` or other attribution trailers. `Refs` is the
+last line of the message.
 
 ## 5. Verify
 
