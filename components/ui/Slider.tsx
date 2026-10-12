@@ -1,4 +1,5 @@
 import * as RadixSlider from "@radix-ui/react-slider";
+import { twMerge } from "tailwind-merge";
 
 interface SliderProps {
   value?: number;
@@ -10,6 +11,7 @@ interface SliderProps {
   onChange?: (value: number) => void;
   // Fires once when the user lets go, after any dragging.
   onCommit?: (value: number) => void;
+  className?: string;
 }
 
 const Slider = ({
@@ -20,6 +22,7 @@ const Slider = ({
   valueText,
   onChange,
   onCommit,
+  className,
 }: SliderProps) => {
   return (
     <RadixSlider.Root
@@ -28,7 +31,10 @@ const Slider = ({
       onValueCommit={(newValue) => onCommit?.(newValue[0])}
       max={max}
       step={step}
-      className="group relative flex items-center select-none touch-none w-full h-10"
+      className={twMerge(
+        "group relative flex items-center select-none touch-none w-full h-10",
+        className,
+      )}
     >
       <RadixSlider.Track className="bg-neutral-600 relative grow rounded-full h-[3px]">
         <RadixSlider.Range className="absolute bg-white group-hover:bg-green-500 rounded-full h-full" />
