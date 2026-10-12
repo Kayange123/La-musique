@@ -71,7 +71,13 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
     router.refresh();
   };
   return (
-    <button onClick={handleLike} className="hover:opacity-75 transition">
+    <button
+      type="button"
+      onClick={handleLike}
+      aria-label={liked ? "Remove from liked songs" : "Add to liked songs"}
+      aria-pressed={liked}
+      className="hover:opacity-75 transition"
+    >
       <Icon color={liked ? "#22c55e" : "white"} size={25} />
     </button>
   );

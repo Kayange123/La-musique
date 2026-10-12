@@ -9,3 +9,9 @@ body,
   background-color: black;
   color-scheme: dark;
 }
+
+/* Keyboard focus is always visible; mouse clicks don't show a ring. */
+:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}

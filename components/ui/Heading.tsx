@@ -43,12 +43,16 @@ const Heading = ({ children, className }: HeadingProps) => {
       <div className="w-full mb-4 flex items-center justify-between">
         <div className="hidden md:flex gap-x-2 items-center">
           <button
+            type="button"
+            aria-label="Go back"
             onClick={() => router.back()}
             className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition"
           >
             <RxCaretLeft size={30} className="text-white" />
           </button>
           <button
+            type="button"
+            aria-label="Go forward"
             onClick={() => router.forward()}
             className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition"
           >

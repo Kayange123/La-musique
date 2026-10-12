@@ -64,6 +64,8 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
       pause();
     }
   };
+  const playLabel = isPlaying ? "Pause" : "Play";
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
       <div className="flex max-w-xs justify-start">
@@ -73,36 +75,55 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
         </div>
       </div>
       <div className="flex md:hidden col-auto justify-end items-center w-full">
-        <div
+        <button
+          type="button"
           onClick={handlePlay}
-          className="flex items-center h-10 w-10 justify-center rounded-full bg-white p-1 cursor-pointer"
+          aria-label={playLabel}
+          className="flex items-center h-10 w-10 justify-center rounded-full bg-white p-1"
         >
           <Icon size={30} className="text-black" />
-        </div>
+        </button>
       </div>
       <div className="hidden md:flex items-center justify-center h-full w-full max-w-[720px] gap-x-6">
-        <AiFillStepBackward
+        <button
+          type="button"
           onClick={onPlayPrevious}
-          size={30}
-          className="text-neutral-400 cursor-pointer transition hover:text-white"
-        />
-        <div className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer">
-          <Icon onClick={handlePlay} size={30} className="text-black" />
-        </div>
-        <AiFillStepForward
+          aria-label="Previous song"
+          className="text-neutral-400 transition hover:text-white"
+        >
+          <AiFillStepBackward size={30} />
+        </button>
+        <button
+          type="button"
+          onClick={handlePlay}
+          aria-label={playLabel}
+          className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1"
+        >
+          <Icon size={30} className="text-black" />
+        </button>
+        <button
+          type="button"
           onClick={onPlayNext}
-          size={30}
-          className="text-neutral-400 cursor-pointer transition hover:text-white"
-        />
+          aria-label="Next song"
+          className="text-neutral-400 transition hover:text-white"
+        >
+          <AiFillStepForward size={30} />
+        </button>
       </div>
       <div className="hidden md:flex w-full pr-2 justify-end">
         <div className="flex items-center gap-x-2 w-[120px]">
-          <VolumeIcon
+          <button
+            type="button"
             onClick={toggleMute}
-            className="cursor-pointer"
-            size={32}
+            aria-label={volume === 0 ? "Unmute" : "Mute"}
+          >
+            <VolumeIcon size={32} />
+          </button>
+          <Slider
+            label="Volume"
+            value={volume}
+            onChange={(value) => setVolume(value)}
           />
-          <Slider value={volume} onChange={(value) => setVolume(value)} />
         </div>
       </div>
     </div>
