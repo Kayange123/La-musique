@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { twMerge } from "tailwind-merge";
@@ -60,12 +61,20 @@ const Heading = ({ children, className }: HeadingProps) => {
           </button>
         </div>
         <div className="flex md:hidden gap-x-3 items-center">
-          <button className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center">
-            <HiHome className="text-black" size={20} />
-          </button>
-          <button className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center">
-            <BiSearch className="text-black" size={20} />
-          </button>
+          <Link
+            href="/"
+            aria-label="Home"
+            className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center"
+          >
+            <HiHome className="text-black" size={20} aria-hidden="true" />
+          </Link>
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center"
+          >
+            <BiSearch className="text-black" size={20} aria-hidden="true" />
+          </Link>
         </div>
         <div className="flex justify-between items-center gap-x-4">
           {user ? (
