@@ -1,13 +1,13 @@
 "use client";
 import { toast } from "react-hot-toast";
 import { ISong } from "@/types";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useEffect, useMemo, useState } from "react";
 
-const useGetSongById = (id?: string) => {
+const useGetSongById = (id?: number) => {
   const [isLoading, setIsLoading] = useState(false);
   const [song, setSong] = useState<ISong | undefined>(undefined);
-  const { supabaseClient } = useSessionContext();
+  const { supabaseClient } = useSupabase();
 
   useEffect(() => {
     if (!id) {
@@ -25,7 +25,7 @@ const useGetSongById = (id?: string) => {
       if (error) {
         return toast.error(error.message);
       }
-      setSong(data as ISong);
+      setSong(data);
     };
     fetchSong();
   }, [id, supabaseClient]);

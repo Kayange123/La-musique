@@ -3,19 +3,19 @@
 import { useState, useEffect } from "react";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { IconType } from "react-icons";
 
 interface LikeButtonProps {
-  songId: string;
+  songId: number;
 }
 
 const LikeButton = ({ songId }: LikeButtonProps) => {
   const router = useRouter();
-  const { supabaseClient } = useSessionContext();
+  const { supabaseClient } = useSupabase();
   const authModal = useAuthModal();
   const { user } = useUser();
 

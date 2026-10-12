@@ -1,10 +1,7 @@
 "use client";
-import {
-  useSessionContext,
-  useUser as useSupaUser,
-} from "@supabase/auth-helpers-react";
 import { ISubscription, IUserDetails } from "@/types";
-import { User } from "@supabase/auth-helpers-nextjs";
+import { User } from "@supabase/supabase-js";
+import { useSupabase } from "@/providers/Supabase";
 import { createContext, useState, useEffect, useContext } from "react";
 
 type UserContextType = {
@@ -29,10 +26,10 @@ export const MyUserContextProvider = (props: Props) => {
   const [subscription, setSubscription] = useState<ISubscription | null>(null);
   const {
     session,
+    user,
     isLoading: isLoadingUser,
     supabaseClient: supabase,
-  } = useSessionContext();
-  const user = useSupaUser();
+  } = useSupabase();
   const accessToken = session?.access_token ?? null;
 
   const getUserDetails = () => supabase.from("users").select("*").single();
@@ -52,10 +49,10 @@ export const MyUserContextProvider = (props: Props) => {
           const subscriptionPromise = results[1];
 
           if (userDetailPromise.status === "fulfilled") {
-            setUserDetails(userDetailPromise.value.data as IUserDetails);
+            setUserDetails(userDetailPromise.value.data);
           }
           if (subscriptionPromise.status === "fulfilled") {
-            setSubscription(subscriptionPromise.value.data as ISubscription);
+            setSubscription(subscriptionPromise.value.data);
           }
           setIsLoadingData(false);
         }

@@ -9,7 +9,6 @@ import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import Slider from "../ui/Slider";
 import usePlayer from "@/hooks/usePlayer";
-//@ts-ignore
 import useSound from "use-sound";
 
 interface PlayerProps {

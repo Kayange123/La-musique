@@ -22,7 +22,7 @@ const PageContent = ({ songs }: PageContentProps) => {
         <SongItem
           key={song.id}
           song={song}
-          onClick={(id: string) => onPlay(id)}
+          onClick={(id: number) => onPlay(id)}
         />
       ))}
     </div>

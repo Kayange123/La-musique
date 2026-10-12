@@ -7,7 +7,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import toast from "react-hot-toast";
 import { useUser } from "@/hooks/useUser";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useRouter } from "next/navigation";
 
 const MAX_SONG_SIZE = 20 * 1024 * 1024;
@@ -26,7 +26,7 @@ const toSafeFileName = (value: string) =>
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const uploadModal = useUploadModal();
-  const supabaseClient = useSupabaseClient();
+  const { supabaseClient } = useSupabase();
   const router = useRouter();
   const { user } = useUser();
 

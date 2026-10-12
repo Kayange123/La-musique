@@ -1,11 +1,8 @@
 import { ISong } from "@/types";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient, getUserId } from "@/lib/supabase/server";
 
 export const getSongs = async (): Promise<ISong[]> => {
-  const supabase = createServerComponentClient({
-    cookies: cookies,
-  });
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("songs")
@@ -14,39 +11,33 @@ export const getSongs = async (): Promise<ISong[]> => {
 
   if (error) return [];
 
-  return (data as any) || [];
+  return data ?? [];
 };
 
 export const getSongsByUserId = async () => {
-  const supabase = createServerComponentClient({
-    cookies,
-  });
+  const supabase = await createClient();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const userId = await getUserId(supabase);
 
-  if (!session?.user) {
+  if (!userId) {
     return [];
   }
 
   const { data, error } = await supabase
     .from("songs")
     .select("*")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) {
     console.log(error);
   }
 
-  return (data as any) || [];
+  return data ?? [];
 };
 
 export const getSongsByTitle = async (title: string) => {
-  const supabase = createServerComponentClient({
-    cookies,
-  });
+  const supabase = await createClient();
   if (!title) {
     return await getSongs();
   }
@@ -61,33 +52,27 @@ export const getSongsByTitle = async (title: string) => {
     return [];
   }
 
-  return (data as any) || [];
+  return data ?? [];
 };
 
 export const getLikedSongs = async (): Promise<ISong[]> => {
-  const supabase = createServerComponentClient({
-    cookies,
-  });
+  const supabase = await createClient();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const userId = await getUserId(supabase);
 
-  if (!session?.user) {
+  if (!userId) {
     return [];
   }
 
   const { data, error } = await supabase
     .from("liked_songs")
     .select("*, songs(*)")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) {
     return [];
   }
 
-  return data.map((item) => ({
-    ...item.songs,
-  }));
+  return data.flatMap((item) => (item.songs ? [item.songs] : []));
 };

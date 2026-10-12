@@ -43,7 +43,7 @@ const Library = ({ songs }: LibraryProps) => {
           songs.map((song) => (
             <MediaItem
               key={song?.id}
-              onClick={(id: string) => onPlay(id)}
+              onClick={(id: number) => onPlay(id)}
               song={song}
             />
           ))
