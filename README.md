@@ -22,6 +22,25 @@ npm install
 
 ### 2. Set up Supabase
 
+#### Local (recommended for development)
+
+With Docker running:
+
+```bash
+npx supabase start
+```
+
+This starts Supabase on your machine and applies everything in [supabase/migrations](supabase/migrations). Then put the local values in `.env.local`:
+
+```bash
+npx supabase status -o env
+# copy API_URL into NEXT_PUBLIC_SUPABASE_URL and ANON_KEY into NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
+
+Email confirmation is off locally, so you can sign up with any address. Supabase Studio runs at [http://127.0.0.1:54323](http://127.0.0.1:54323). Use `npx supabase db reset` to start from an empty database.
+
+#### Hosted
+
 Create a project at [supabase.com](https://supabase.com), then apply the schema in [supabase/migrations](supabase/migrations). It creates the tables, row-level security policies and the `songs` and `images` storage buckets.
 
 For a **new** project, either paste the SQL into the Supabase SQL editor, or use the CLI:
@@ -50,8 +69,6 @@ cp .env.example .env.local
 ```
 
 Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from Project Settings → API.
-
-Images are served from your Supabase project, so update the domain in [next.config.js](next.config.js) to match your project URL.
 
 ### 4. Run
 
