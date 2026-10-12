@@ -4,6 +4,8 @@ import PageContent from "@/components/pageContent/PageContent";
 import Heading from "@/components/ui/Heading";
 import ListItem from "@/components/ui/ListItem";
 
+export const revalidate = 0;
+
 export default async function Home() {
   const songs = await getSongs();
 

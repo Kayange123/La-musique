@@ -22,17 +22,19 @@ export const getSongsByUserId = async () => {
     cookies,
   });
 
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (sessionError) {
-    //console.log(sessionError?.message);
+  if (!session?.user) {
+    return [];
   }
 
   const { data, error } = await supabase
     .from("songs")
     .select("*")
-    .eq("user_id", sessionData?.session?.user?.id);
+    .eq("user_id", session.user.id)
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.log(error);
@@ -71,10 +73,14 @@ export const getLikedSongs = async (): Promise<ISong[]> => {
     data: { session },
   } = await supabase.auth.getSession();
 
+  if (!session?.user) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("liked_songs")
     .select("*, songs(*)")
-    .eq("user_id", session?.user?.id)
+    .eq("user_id", session.user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
