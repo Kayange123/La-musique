@@ -3,6 +3,8 @@ import { ISong } from "@/types";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import MediaItem from "../ui/MediaItem";
 import LikeButton from "../ui/LikeButton";
+import { RiPlayListAddLine } from "react-icons/ri";
+import usePlaylistDialog from "@/hooks/usePlaylistDialog";
 import { IconType } from "react-icons";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import {
@@ -28,6 +30,7 @@ interface PlayerProps {
 }
 const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const imageUrl = useLoadImage(song);
+  const openAddSong = usePlaylistDialog((state) => state.openAddSong);
   const volume = usePlayer((state) => state.volume);
   const setVolume = usePlayer((state) => state.setVolume);
   const toggleMute = usePlayer((state) => state.toggleMute);
@@ -201,6 +204,14 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
         <div className="flex items-center w-full gap-x-4">
           <MediaItem song={song} onClick={handlePlay} />
           <LikeButton songId={song?.id} />
+          <button
+            type="button"
+            onClick={() => openAddSong(song.id)}
+            aria-label="Add to playlist"
+            className="text-neutral-400 hover:text-white transition"
+          >
+            <RiPlayListAddLine size={22} aria-hidden="true" />
+          </button>
         </div>
       </div>
       <div className="flex md:hidden col-auto justify-end items-center w-full">

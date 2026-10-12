@@ -7,6 +7,7 @@ import DeleteSongModal from "@/components/modal/DeleteSongModal";
 import CreatePlaylistModal from "@/components/modal/CreatePlaylistModal";
 import RenamePlaylistModal from "@/components/modal/RenamePlaylistModal";
 import DeletePlaylistModal from "@/components/modal/DeletePlaylistModal";
+import AddToPlaylistModal from "@/components/modal/AddToPlaylistModal";
 
 const ModalProvider = () => {
   return (
@@ -18,6 +19,7 @@ const ModalProvider = () => {
       <CreatePlaylistModal />
       <RenamePlaylistModal />
       <DeletePlaylistModal />
+      <AddToPlaylistModal />
     </>
   );
 };

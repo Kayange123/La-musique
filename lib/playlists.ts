@@ -103,3 +103,15 @@ export const removeSongFromPlaylist = async (
 // Route params are strings; only positive whole numbers are valid ids.
 export const parsePlaylistId = (value: string): number | null =>
   /^[1-9]\d{0,15}$/.test(value) ? Number(value) : null;
+
+export const listPlaylists = async (supabase: Client, userId: string) => {
+  const { data, error } = await supabase
+    .from("playlists")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data ?? [];
+};

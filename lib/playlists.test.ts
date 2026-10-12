@@ -4,6 +4,7 @@ import {
   cleanPlaylistName,
   createPlaylist,
   deletePlaylist,
+  listPlaylists,
   parsePlaylistId,
   removeSongFromPlaylist,
   renamePlaylist,
@@ -26,7 +27,7 @@ const fakeClient = (result: Result) => {
     then: (resolve: (value: typeof settled) => unknown) => resolve(settled),
     single: async () => settled,
   };
-  for (const method of ["select", "delete"]) {
+  for (const method of ["select", "delete", "order"]) {
     builder[method] = () => builder;
   }
   for (const method of ["insert", "update"]) {
@@ -164,4 +165,20 @@ describe("parsePlaylistId", () => {
       expect(parsePlaylistId(value)).toBeNull();
     },
   );
+});
+
+describe("listPlaylists", () => {
+  it("returns the user's playlists", async () => {
+    const rows = [{ id: 1, name: "A" }];
+    const { client, calls } = fakeClient({ data: rows });
+    await expect(listPlaylists(client, "user-1")).resolves.toEqual(rows);
+    expect(calls.filters).toEqual([["user_id", "user-1"]]);
+  });
+
+  it("passes errors through", async () => {
+    const { client } = fakeClient({ error: { message: "network down" } });
+    await expect(listPlaylists(client, "user-1")).rejects.toThrow(
+      "network down",
+    );
+  });
 });
