@@ -9,6 +9,7 @@ import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import Slider from "../ui/Slider";
 import usePlayer from "@/hooks/usePlayer";
+import { getNextId, getPreviousId } from "@/lib/queue";
 import useSound from "use-sound";
 
 interface PlayerProps {
@@ -24,20 +25,16 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const Icon: IconType = isPlaying ? BsPauseFill : BsPlayFill;
 
   const onPlayNext = () => {
-    if (player.ids.length === 0) {
-      return;
+    const nextId = getNextId(player.ids, player.activeId);
+    if (nextId !== undefined) {
+      player.setId(nextId);
     }
-    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
-    const nextSong = player.ids[currentIndex + 1];
-    player.setId(nextSong ?? player.ids[0]);
   };
   const onPlayPrevious = () => {
-    if (player.ids.length === 0) {
-      return;
+    const previousId = getPreviousId(player.ids, player.activeId);
+    if (previousId !== undefined) {
+      player.setId(previousId);
     }
-    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
-    const prevSong = player.ids[currentIndex - 1];
-    player.setId(prevSong ?? player.ids[player.ids.length - 1]);
   };
 
   const [play, { pause, sound }] = useSound(songUrl, {
