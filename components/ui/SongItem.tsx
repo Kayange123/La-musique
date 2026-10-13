@@ -8,19 +8,21 @@ import { defaultImage } from "@/common.constant";
 
 interface SongItemProps {
   song: ISong;
-  onClick: (id: string) => void;
+  onClick: (id: number) => void;
 }
 const SongItem = ({ song, onClick }: SongItemProps) => {
   const imagePath = useLoadImage(song);
   return (
-    <div
+    <button
+      type="button"
       onClick={() => onClick(song?.id)}
-      className="relative group flex flex-col items-center justify-center rounded-md overflow-hidden gap-x-4 bg-neutral-400/5 cursor-pointer hover:bg-neutral-400/10 transition p-3"
+      aria-label={`Play ${song?.title} by ${song?.author}`}
+      className="relative group flex text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500 flex-col items-center justify-center rounded-md overflow-hidden gap-x-4 bg-neutral-400/5 cursor-pointer hover:bg-neutral-400/10 transition p-3"
     >
       <div className="relative aspect-square rounded-md overflow-hidden h-full w-full">
         <Image
           src={imagePath || defaultImage}
-          alt="banner image"
+          alt=""
           fill
           className="object-cover"
         />
@@ -34,7 +36,7 @@ const SongItem = ({ song, onClick }: SongItemProps) => {
       <div className="absolute bottom-24 right-5">
         <PlayButton />
       </div>
-    </div>
+    </button>
   );
 };
 

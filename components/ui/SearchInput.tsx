@@ -19,7 +19,7 @@ const SearchInput = () => {
         url: "/search",
         query,
       },
-      { skipNull: true }
+      { skipNull: true },
     );
     router.push(url);
   }, [debouncedValue, router]);

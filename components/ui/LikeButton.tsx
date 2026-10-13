@@ -3,20 +3,19 @@
 import { useState, useEffect } from "react";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useRouter } from "next/navigation";
-import { data } from "autoprefixer";
-import toast from "react-hot-toast/headless";
+import toast from "react-hot-toast";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { IconType } from "react-icons";
 
 interface LikeButtonProps {
-  songId: string;
+  songId: number;
 }
 
 const LikeButton = ({ songId }: LikeButtonProps) => {
   const router = useRouter();
-  const { supabaseClient } = useSessionContext();
+  const { supabaseClient } = useSupabase();
   const authModal = useAuthModal();
   const { user } = useUser();
 
@@ -33,21 +32,20 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
         .select("*")
         .eq("user_id", user.id)
         .eq("song_id", songId)
-        .single();
-      if (!error && data) {
-        toast.success("liked");
-        setIsLiked(true);
-      }
+        .maybeSingle();
+      setIsLiked(!error && !!data);
     };
     fetchData();
   }, [user, songId, supabaseClient]);
 
-  const Icon: IconType = isLiked ? AiFillHeart : AiOutlineHeart;
+  // A like from a previous session never shows once logged out.
+  const liked = !!user && isLiked;
+  const Icon: IconType = liked ? AiFillHeart : AiOutlineHeart;
   const handleLike = async () => {
     if (!user) {
       return authModal.onOpen();
     }
-    if (isLiked) {
+    if (liked) {
       const { error } = await supabaseClient
         .from("liked_songs")
         .delete()
@@ -73,8 +71,14 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
     router.refresh();
   };
   return (
-    <button onClick={handleLike} className="hover:opacity-75 transition">
-      <Icon color={isLiked ? "#22c55e" : "white"} size={25} />
+    <button
+      type="button"
+      onClick={handleLike}
+      aria-label={liked ? "Remove from liked songs" : "Add to liked songs"}
+      aria-pressed={liked}
+      className="hover:opacity-75 transition"
+    >
+      <Icon color={liked ? "#22c55e" : "white"} size={25} />
     </button>
   );
 };

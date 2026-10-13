@@ -1,5 +1,6 @@
 "use client";
 
+import SongMenu from "@/components/ui/SongMenu";
 import { ISong } from "@/types";
 import MediaItem from "./MediaItem";
 import LikeButton from "./LikeButton";
@@ -20,9 +21,10 @@ const SearchContent = ({ songs }: SearchContentProps) => {
           {songs.map((song) => (
             <div key={song?.id} className="flex items-center w-full gap-x-4">
               <div className="flex-1">
-                <MediaItem song={song} onClick={(id: string) => onPlay(id)} />
+                <MediaItem song={song} onClick={(id: number) => onPlay(id)} />
               </div>
               <LikeButton songId={song?.id} />
+              <SongMenu song={song} />
             </div>
           ))}
         </>

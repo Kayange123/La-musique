@@ -1,19 +1,20 @@
 "use client";
 import { toast } from "react-hot-toast";
 import { ISong } from "@/types";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useEffect, useMemo, useState } from "react";
 
-const useGetSongById = (id?: string) => {
-  const [isLoading, setIsLoading] = useState(false);
+const useGetSongById = (id?: number) => {
   const [song, setSong] = useState<ISong | undefined>(undefined);
-  const { supabaseClient } = useSessionContext();
+  const [failedId, setFailedId] = useState<number | undefined>(undefined);
+  const { supabaseClient } = useSupabase();
 
   useEffect(() => {
     if (!id) {
       return;
     }
-    setIsLoading(true);
+    let cancelled = false;
+
     const fetchSong = async () => {
       const { data, error } = await supabaseClient
         .from("songs")
@@ -21,21 +22,30 @@ const useGetSongById = (id?: string) => {
         .eq("id", id)
         .single();
 
+      if (cancelled) {
+        return;
+      }
       if (error) {
+        setFailedId(id);
         return toast.error(error.message);
       }
-      setSong(data as ISong);
-      setIsLoading(false);
+      setSong(data);
     };
     fetchSong();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id, supabaseClient]);
+
+  const isLoading = !!id && song?.id !== id && failedId !== id;
 
   return useMemo(
     () => ({
       isLoading,
       song,
     }),
-    [isLoading, song]
+    [isLoading, song],
   );
 };
 

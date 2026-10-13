@@ -1,11 +1,18 @@
-import { getSongs } from "@/actions";
+import { getRecentlyPlayed, getSongs } from "@/actions";
+import ResumeCard from "@/components/home/ResumeCard";
+import RecentlyPlayed from "@/components/home/RecentlyPlayed";
 import { defaultImage } from "@/common.constant";
 import PageContent from "@/components/pageContent/PageContent";
 import Heading from "@/components/ui/Heading";
 import ListItem from "@/components/ui/ListItem";
 
+export const revalidate = 0;
+
 export default async function Home() {
-  const songs = await getSongs();
+  const [songs, recentlyPlayed] = await Promise.all([
+    getSongs(),
+    getRecentlyPlayed(),
+  ]);
 
   return (
     <div className="bg-neutral-900 w-full h-full rounded-lg overflow-hidden overflow-y-auto">
@@ -23,7 +30,11 @@ export default async function Home() {
           </div>
         </div>
       </Heading>
-      <div className="mt-2 mb-7 px-6">
+      <div className="mt-2 px-6 flex flex-col gap-y-8">
+        <ResumeCard />
+        <RecentlyPlayed songs={recentlyPlayed} />
+      </div>
+      <div className="mt-8 mb-7 px-6">
         <div className="flex justify-between items-center">
           <h1 className="text-white font-semibold text-base md:text-2xl">
             Latest songs

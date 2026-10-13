@@ -7,17 +7,26 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import toast from "react-hot-toast";
 import { useUser } from "@/hooks/useUser";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useRouter } from "next/navigation";
+import {
+  AUDIO_ACCEPT,
+  AUDIO_FORMATS,
+  IMAGE_TYPES,
+  getAudioExtension,
+  isValidImage,
+  isValidSong,
+  toSafeFileName,
+} from "@/lib/upload";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const uploadModal = useUploadModal();
-  const supabaseClient = useSupabaseClient();
+  const { supabaseClient } = useSupabase();
   const router = useRouter();
   const { user } = useUser();
 
-  const onChange = (open: boolean) => {
+  const onChange = () => {
     reset();
     uploadModal.onClose();
   };
@@ -30,23 +39,49 @@ const UploadModal = () => {
       if (!imageFile || !songFile || !user) {
         return toast.error("Missing fields");
       }
-      const uniqueID = uniqid();
+      const extension = getAudioExtension(songFile);
+      if (!extension || !isValidSong(songFile)) {
+        return toast.error(
+          "Song must be MP3, M4A, AAC, WAV, OGG or FLAC, under 50MB",
+        );
+      }
+      if (!isValidImage(imageFile)) {
+        return toast.error("Image must be a JPEG, PNG, WebP or GIF under 5MB");
+      }
 
-      const { error: songError, data: songData } = await supabaseClient.storage
-        .from("songs")
-        .upload(`song-${data.title}-${uniqueID}`, songFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-      const { error: imageError, data: imageData } =
-        await supabaseClient.storage
-          .from("images")
-          .upload(`image-${data.title}-${uniqueID}`, imageFile, {
+      const uniqueID = uniqid();
+      const safeTitle = toSafeFileName(data.title);
+
+      const [songUpload, imageUpload] = await Promise.all([
+        supabaseClient.storage
+          .from("songs")
+          // The extension tells the player the format later.
+          .upload(`song-${safeTitle}-${uniqueID}.${extension}`, songFile, {
             cacheControl: "3600",
+            contentType: AUDIO_FORMATS.get(extension),
             upsert: false,
-          });
-      if (songError || imageError) {
-        setIsLoading(false);
+          }),
+        supabaseClient.storage
+          .from("images")
+          .upload(`image-${safeTitle}-${uniqueID}`, imageFile, {
+            cacheControl: "3600",
+            contentType: imageFile.type,
+            upsert: false,
+          }),
+      ]);
+
+      const removeUploads = () =>
+        Promise.all([
+          songUpload.data &&
+            supabaseClient.storage.from("songs").remove([songUpload.data.path]),
+          imageUpload.data &&
+            supabaseClient.storage
+              .from("images")
+              .remove([imageUpload.data.path]),
+        ]);
+
+      if (songUpload.error || imageUpload.error) {
+        await removeUploads();
         return toast.error("failed to upload image and song");
       }
 
@@ -54,18 +89,19 @@ const UploadModal = () => {
         user_id: user.id,
         title: data.title,
         author: data.author,
-        image_path: imageData.path,
-        song_path: songData.path,
+        image_path: imageUpload.data.path,
+        song_path: songUpload.data.path,
       });
       if (insertError) {
-        setIsLoading(false);
+        await removeUploads();
         return toast.error(insertError.message);
       }
 
       router.refresh();
       toast.success("song created successfully");
+      reset();
       uploadModal.onClose();
-    } catch (error) {
+    } catch {
       toast.error("something went wrong");
     } finally {
       setIsLoading(false);
@@ -85,7 +121,7 @@ const UploadModal = () => {
       isopen={uploadModal.isOpen}
       onChange={onChange}
       title="Add a new song"
-      description="Upload an mp3 file..."
+      description="Upload a song: MP3, M4A, AAC, WAV, OGG or FLAC."
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -108,7 +144,7 @@ const UploadModal = () => {
           <Input
             id="song"
             type="file"
-            accept=".mp3"
+            accept={AUDIO_ACCEPT}
             disabled={isLoading}
             {...register("song", { required: true })}
           />
@@ -118,7 +154,7 @@ const UploadModal = () => {
           <Input
             id="image"
             type="file"
-            accept="image/*"
+            accept={IMAGE_TYPES.join(",")}
             disabled={isLoading}
             {...register("image", { required: true })}
           />

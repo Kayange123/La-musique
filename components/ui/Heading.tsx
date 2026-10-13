@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { twMerge } from "tailwind-merge";
@@ -8,7 +9,7 @@ import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
 import Button from "./Button";
 import useAuthModal from "@/hooks/useAuthModal";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/providers/Supabase";
 import { useUser } from "@/hooks/useUser";
 import { FaUserAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -20,7 +21,7 @@ interface HeadingProps {
 const Heading = ({ children, className }: HeadingProps) => {
   const router = useRouter();
   const authModal = useAuthModal();
-  const supabaseClient = useSupabaseClient();
+  const { supabaseClient } = useSupabase();
   const { user } = useUser();
 
   const handleLogout = async () => {
@@ -37,18 +38,22 @@ const Heading = ({ children, className }: HeadingProps) => {
     <div
       className={twMerge(
         "h-fit bg-gradient-to-b from-emerald-900 p-6",
-        className
+        className,
       )}
     >
       <div className="w-full mb-4 flex items-center justify-between">
         <div className="hidden md:flex gap-x-2 items-center">
           <button
+            type="button"
+            aria-label="Go back"
             onClick={() => router.back()}
             className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition"
           >
             <RxCaretLeft size={30} className="text-white" />
           </button>
           <button
+            type="button"
+            aria-label="Go forward"
             onClick={() => router.forward()}
             className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition"
           >
@@ -56,12 +61,20 @@ const Heading = ({ children, className }: HeadingProps) => {
           </button>
         </div>
         <div className="flex md:hidden gap-x-3 items-center">
-          <button className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center">
-            <HiHome className="text-black" size={20} />
-          </button>
-          <button className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center">
-            <BiSearch className="text-black" size={20} />
-          </button>
+          <Link
+            href="/"
+            aria-label="Home"
+            className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center"
+          >
+            <HiHome className="text-black" size={20} aria-hidden="true" />
+          </Link>
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center"
+          >
+            <BiSearch className="text-black" size={20} aria-hidden="true" />
+          </Link>
         </div>
         <div className="flex justify-between items-center gap-x-4">
           {user ? (
@@ -69,12 +82,13 @@ const Heading = ({ children, className }: HeadingProps) => {
               <Button onClick={handleLogout} className="bg-white px-3 py-2">
                 Logout
               </Button>
-              <Button
-                onClick={() => router.push("/account")}
-                className="bg-white p-3"
+              <Link
+                href="/account"
+                aria-label="Account"
+                className="rounded-full bg-white p-3 text-black hover:opacity-75 transition"
               >
-                <FaUserAlt size={20} />
-              </Button>
+                <FaUserAlt size={20} aria-hidden="true" />
+              </Link>
             </div>
           ) : (
             <>

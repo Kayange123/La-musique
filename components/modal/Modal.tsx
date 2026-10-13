@@ -28,7 +28,11 @@ const Modal = ({
           </Dialog.Description>
           <div className="">{children}</div>
           <Dialog.Close asChild>
-            <button className="text-neutral-400 hover:text-white absolute top-3 right-3">
+            <button
+              type="button"
+              aria-label="Close"
+              className="text-neutral-400 hover:text-white absolute top-3 right-3"
+            >
               <IoMdClose size={25} />
             </button>
           </Dialog.Close>

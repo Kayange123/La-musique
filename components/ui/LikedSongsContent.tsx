@@ -1,5 +1,6 @@
 "use client";
 
+import SongMenu from "@/components/ui/SongMenu";
 import { useUser } from "@/hooks/useUser";
 import { ISong } from "@/types";
 import { useRouter } from "next/navigation";
@@ -31,9 +32,10 @@ const LikedSongsContent = ({ songs }: LikedContent) => {
           {songs.map((song) => (
             <div className="flex items-center gap-x-4 w-full" key={song?.id}>
               <div className="flex-1">
-                <MediaItem song={song} onClick={(id: string) => onPlay(id)} />
+                <MediaItem song={song} onClick={(id: number) => onPlay(id)} />
               </div>
               <LikeButton songId={song?.id} />
+              <SongMenu song={song} />
             </div>
           ))}
         </>

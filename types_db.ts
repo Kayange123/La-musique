@@ -3,10 +3,35 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[];
 
-export interface Database {
+export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       customers: {
@@ -14,6 +39,7 @@ export interface Database {
           id: string;
           stripe_customer_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           id: string;
           stripe_customer_id?: string | null;
@@ -22,20 +48,129 @@ export interface Database {
           id?: string;
           stripe_customer_id?: string | null;
         };
+        Relationships: [];
       };
       liked_songs: {
         Row: {
+          created_at: string | null;
           song_id: number;
           user_id: string;
         };
+        ComputedFields: never;
         Insert: {
+          created_at?: string | null;
           song_id: number;
           user_id: string;
         };
         Update: {
+          created_at?: string | null;
           song_id?: number;
           user_id?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "liked_songs_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      play_history: {
+        Row: {
+          id: number;
+          played_at: string;
+          song_id: number;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: number;
+          played_at?: string;
+          song_id: number;
+          user_id?: string;
+        };
+        Update: {
+          id?: number;
+          played_at?: string;
+          song_id?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "play_history_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      playlist_songs: {
+        Row: {
+          added_at: string;
+          playlist_id: number;
+          position: number;
+          song_id: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          added_at?: string;
+          playlist_id: number;
+          position?: number;
+          song_id: number;
+        };
+        Update: {
+          added_at?: string;
+          playlist_id?: number;
+          position?: number;
+          song_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "playlist_songs_playlist_id_fkey";
+            columns: ["playlist_id"];
+            isOneToOne: false;
+            referencedRelation: "playlists";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "playlist_songs_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      playlists: {
+        Row: {
+          cover_path: string | null;
+          created_at: string;
+          description: string | null;
+          id: number;
+          name: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cover_path?: string | null;
+          created_at?: string;
+          description?: string | null;
+          id?: number;
+          name: string;
+          user_id?: string;
+        };
+        Update: {
+          cover_path?: string | null;
+          created_at?: string;
+          description?: string | null;
+          id?: number;
+          name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
       };
       prices: {
         Row: {
@@ -51,14 +186,14 @@ export interface Database {
           type: Database["public"]["Enums"]["pricing_type"] | null;
           unit_amount: number | null;
         };
+        ComputedFields: never;
         Insert: {
           active?: boolean | null;
           currency?: string | null;
           description?: string | null;
           id: string;
           interval?:
-            | Database["public"]["Enums"]["pricing_plan_interval"]
-            | null;
+            Database["public"]["Enums"]["pricing_plan_interval"] | null;
           interval_count?: number | null;
           metadata?: Json | null;
           product_id?: string | null;
@@ -72,8 +207,7 @@ export interface Database {
           description?: string | null;
           id?: string;
           interval?:
-            | Database["public"]["Enums"]["pricing_plan_interval"]
-            | null;
+            Database["public"]["Enums"]["pricing_plan_interval"] | null;
           interval_count?: number | null;
           metadata?: Json | null;
           product_id?: string | null;
@@ -81,6 +215,15 @@ export interface Database {
           type?: Database["public"]["Enums"]["pricing_type"] | null;
           unit_amount?: number | null;
         };
+        Relationships: [
+          {
+            foreignKeyName: "prices_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       products: {
         Row: {
@@ -91,6 +234,7 @@ export interface Database {
           metadata: Json | null;
           name: string | null;
         };
+        ComputedFields: never;
         Insert: {
           active?: boolean | null;
           description?: string | null;
@@ -107,6 +251,7 @@ export interface Database {
           metadata?: Json | null;
           name?: string | null;
         };
+        Relationships: [];
       };
       songs: {
         Row: {
@@ -118,6 +263,7 @@ export interface Database {
           title: string | null;
           user_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           author?: string | null;
           created_at?: string | null;
@@ -136,6 +282,7 @@ export interface Database {
           title?: string | null;
           user_id?: string | null;
         };
+        Relationships: [];
       };
       subscriptions: {
         Row: {
@@ -155,6 +302,7 @@ export interface Database {
           trial_start: string | null;
           user_id: string;
         };
+        ComputedFields: never;
         Insert: {
           cancel_at?: string | null;
           cancel_at_period_end?: boolean | null;
@@ -189,6 +337,15 @@ export interface Database {
           trial_start?: string | null;
           user_id?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_price_id_fkey";
+            columns: ["price_id"];
+            isOneToOne: false;
+            referencedRelation: "prices";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       users: {
         Row: {
@@ -198,6 +355,7 @@ export interface Database {
           id: string;
           payment_method: Json | null;
         };
+        ComputedFields: never;
         Insert: {
           avatar_url?: string | null;
           billing_address?: Json | null;
@@ -212,6 +370,7 @@ export interface Database {
           id?: string;
           payment_method?: Json | null;
         };
+        Relationships: [];
       };
     };
     Views: {
@@ -236,4 +395,142 @@ export interface Database {
       [_ in never]: never;
     };
   };
+};
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  "public"
+>];
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
 }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R;
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
+      }
+      ? R
+      : never
+    : never;
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I;
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
+      }
+      ? I
+      : never
+    : never;
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U;
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
+      }
+      ? U
+      : never
+    : never;
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never;
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      pricing_plan_interval: ["day", "week", "month", "year"],
+      pricing_type: ["one_time", "recurring"],
+      subscription_status: [
+        "trialing",
+        "active",
+        "canceled",
+        "incomplete",
+        "incomplete_expired",
+        "past_due",
+        "unpaid",
+      ],
+    },
+  },
+} as const;

@@ -2,21 +2,24 @@
 
 import AuthModal from "@/components/modal/AuthModal";
 import UploadModal from "@/components/modal/UploadModal";
-import React, { useState, useEffect } from "react";
+import EditSongModal from "@/components/modal/EditSongModal";
+import DeleteSongModal from "@/components/modal/DeleteSongModal";
+import CreatePlaylistModal from "@/components/modal/CreatePlaylistModal";
+import EditPlaylistModal from "@/components/modal/EditPlaylistModal";
+import DeletePlaylistModal from "@/components/modal/DeletePlaylistModal";
+import AddToPlaylistModal from "@/components/modal/AddToPlaylistModal";
 
 const ModalProvider = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) return null;
-
   return (
     <>
       <AuthModal />
       <UploadModal />
+      <EditSongModal />
+      <DeleteSongModal />
+      <CreatePlaylistModal />
+      <EditPlaylistModal />
+      <DeletePlaylistModal />
+      <AddToPlaylistModal />
     </>
   );
 };

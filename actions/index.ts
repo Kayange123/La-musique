@@ -1,11 +1,10 @@
-import { ISong } from "@/types";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { IPlaylist, ISong } from "@/types";
+import { createClient, getUserId } from "@/lib/supabase/server";
+import { latestDistinct } from "@/lib/history";
+import { PlaylistEntry } from "@/lib/playlistOrder";
 
 export const getSongs = async (): Promise<ISong[]> => {
-  const supabase = createServerComponentClient({
-    cookies: cookies,
-  });
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("songs")
@@ -14,37 +13,33 @@ export const getSongs = async (): Promise<ISong[]> => {
 
   if (error) return [];
 
-  return (data as any) || [];
+  return data ?? [];
 };
 
 export const getSongsByUserId = async () => {
-  const supabase = createServerComponentClient({
-    cookies,
-  });
+  const supabase = await createClient();
 
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.getSession();
+  const userId = await getUserId(supabase);
 
-  if (sessionError) {
-    //console.log(sessionError?.message);
+  if (!userId) {
+    return [];
   }
 
   const { data, error } = await supabase
     .from("songs")
     .select("*")
-    .eq("user_id", sessionData?.session?.user?.id);
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.log(error);
   }
 
-  return (data as any) || [];
+  return data ?? [];
 };
 
 export const getSongsByTitle = async (title: string) => {
-  const supabase = createServerComponentClient({
-    cookies,
-  });
+  const supabase = await createClient();
   if (!title) {
     return await getSongs();
   }
@@ -59,29 +54,153 @@ export const getSongsByTitle = async (title: string) => {
     return [];
   }
 
-  return (data as any) || [];
+  return data ?? [];
 };
 
 export const getLikedSongs = async (): Promise<ISong[]> => {
-  const supabase = createServerComponentClient({
-    cookies,
-  });
+  const supabase = await createClient();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const userId = await getUserId(supabase);
+
+  if (!userId) {
+    return [];
+  }
 
   const { data, error } = await supabase
     .from("liked_songs")
     .select("*, songs(*)")
-    .eq("user_id", session?.user?.id)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) {
     return [];
   }
 
-  return data.map((item) => ({
-    ...item.songs,
-  }));
+  return data.flatMap((item) => (item.songs ? [item.songs] : []));
+};
+
+export const getAccountSummary = async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+
+  if (!claims?.sub) {
+    return null;
+  }
+
+  const [uploads, likes] = await Promise.all([
+    supabase
+      .from("songs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", claims.sub),
+    supabase
+      .from("liked_songs")
+      .select("song_id", { count: "exact", head: true })
+      .eq("user_id", claims.sub),
+  ]);
+
+  return {
+    email: typeof claims.email === "string" ? claims.email : null,
+    uploadCount: uploads.count ?? 0,
+    likeCount: likes.count ?? 0,
+  };
+};
+
+export const getPlaylists = async (): Promise<IPlaylist[]> => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  if (!userId) {
+    return [];
+  }
+
+  // RLS already limits this to the user's playlists; the filter keeps the
+  // intent explicit.
+  const { data, error } = await supabase
+    .from("playlists")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    return [];
+  }
+
+  return data ?? [];
+};
+
+export interface PlaylistPageData {
+  playlist: IPlaylist;
+  entries: PlaylistEntry[];
+  // One uploaded cover, or up to four song covers for a mosaic.
+  coverUrls: string[];
+}
+
+// Returns null for a missing playlist and for someone else's (RLS hides
+// it), so the page can't reveal whether a playlist exists.
+export const getPlaylist = async (
+  playlistId: number,
+): Promise<PlaylistPageData | null> => {
+  const supabase = await createClient();
+
+  const { data: playlist } = await supabase
+    .from("playlists")
+    .select("*")
+    .eq("id", playlistId)
+    .maybeSingle();
+
+  if (!playlist) {
+    return null;
+  }
+
+  const { data: rows } = await supabase
+    .from("playlist_songs")
+    .select("position, added_at, songs(*)")
+    .eq("playlist_id", playlistId)
+    .order("position", { ascending: true });
+
+  const entries: PlaylistEntry[] = (rows ?? []).flatMap((row) =>
+    row.songs
+      ? [{ song: row.songs, position: row.position, addedAt: row.added_at }]
+      : [],
+  );
+
+  const publicUrl = (path: string) =>
+    supabase.storage.from("images").getPublicUrl(path).data.publicUrl;
+  const coverUrls = playlist.cover_path
+    ? [publicUrl(playlist.cover_path)]
+    : entries
+        .flatMap(({ song }) => (song.image_path ? [song.image_path] : []))
+        .slice(0, 4)
+        .map(publicUrl);
+
+  return { playlist, entries, coverUrls };
+};
+
+const RECENTLY_PLAYED = 8;
+
+// The user's most recent distinct songs, newest first. Reads more rows
+// than needed because repeats of the same song collapse into one.
+export const getRecentlyPlayed = async (): Promise<ISong[]> => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  if (!userId) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("play_history")
+    .select("song_id, songs(*)")
+    .eq("user_id", userId)
+    .order("played_at", { ascending: false })
+    .limit(RECENTLY_PLAYED * 6);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return latestDistinct(data, { limit: RECENTLY_PLAYED }).flatMap((row) =>
+    row.songs ? [row.songs] : [],
+  );
 };
