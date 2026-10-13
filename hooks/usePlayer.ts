@@ -23,6 +23,8 @@ interface PlayerStore {
   activeId?: number;
   // Songs queued with Play next / Add to queue, played before the list.
   upNext: QueuedItem[];
+  // Set when resuming: the player seeks here once that song loads.
+  pendingSeek?: { songId: number; position: number };
   volume: number;
   // Restored on unmute.
   previousVolume: number;
@@ -40,6 +42,9 @@ interface PlayerStore {
   removeQueued: (key: string) => void;
   moveQueued: (key: string, offset: -1 | 1) => void;
   clearQueued: () => void;
+  resume: (point: { songId: number; position: number }) => void;
+  // Returns and clears the pending seek if it's for this song.
+  takePendingSeek: (songId: number) => number | undefined;
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   toggleShuffle: () => void;
@@ -99,6 +104,22 @@ const usePlayer = create<PlayerStore>((set, get) => {
     moveQueued: (key, offset) =>
       set((state) => ({ upNext: moveQueued(state.upNext, { key, offset }) })),
     clearQueued: () => set({ upNext: [] }),
+    resume: (point) =>
+      set({
+        activeId: point.songId,
+        contextId: point.songId,
+        ids: [point.songId],
+        queue: [point.songId],
+        pendingSeek: point,
+      }),
+    takePendingSeek: (songId) => {
+      const pending = get().pendingSeek;
+      if (pending?.songId !== songId) {
+        return undefined;
+      }
+      set({ pendingSeek: undefined });
+      return pending.position;
+    },
     setVolume: (volume: number) => set({ volume }),
     toggleMute: () =>
       set((state) =>
@@ -128,6 +149,7 @@ const usePlayer = create<PlayerStore>((set, get) => {
         ids: [],
         queue: [],
         upNext: [],
+        pendingSeek: undefined,
       }),
   };
 });

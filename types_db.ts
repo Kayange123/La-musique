@@ -77,6 +77,36 @@ export type Database = {
           },
         ];
       };
+      play_history: {
+        Row: {
+          id: number;
+          played_at: string;
+          song_id: number;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: number;
+          played_at?: string;
+          song_id: number;
+          user_id?: string;
+        };
+        Update: {
+          id?: number;
+          played_at?: string;
+          song_id?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "play_history_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       playlist_songs: {
         Row: {
           added_at: string;

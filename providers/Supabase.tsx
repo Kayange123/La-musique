@@ -3,6 +3,7 @@
 import { Database } from "@/types_db";
 import { createClient } from "@/lib/supabase/client";
 import usePlayer from "@/hooks/usePlayer";
+import { clearResumePoint } from "@/hooks/useSaveResumePoint";
 import { Session, SupabaseClient, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -38,6 +39,8 @@ const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
       // and unloads the sound.
       if (event === "SIGNED_OUT") {
         usePlayer.getState().reset();
+        // Don't offer the last user's song to whoever signs in next.
+        clearResumePoint();
       }
     });
 
