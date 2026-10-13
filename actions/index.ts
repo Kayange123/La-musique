@@ -1,5 +1,6 @@
 import { IPlaylist, ISong } from "@/types";
 import { createClient, getUserId } from "@/lib/supabase/server";
+import { latestDistinct } from "@/lib/history";
 
 export const getSongs = async (): Promise<ISong[]> => {
   const supabase = await createClient();
@@ -154,4 +155,32 @@ export const getPlaylist = async (
     playlist,
     songs: (rows ?? []).flatMap((row) => (row.songs ? [row.songs] : [])),
   };
+};
+
+const RECENTLY_PLAYED = 8;
+
+// The user's most recent distinct songs, newest first. Reads more rows
+// than needed because repeats of the same song collapse into one.
+export const getRecentlyPlayed = async (): Promise<ISong[]> => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  if (!userId) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("play_history")
+    .select("song_id, songs(*)")
+    .eq("user_id", userId)
+    .order("played_at", { ascending: false })
+    .limit(RECENTLY_PLAYED * 6);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return latestDistinct(data, { limit: RECENTLY_PLAYED }).flatMap((row) =>
+    row.songs ? [row.songs] : [],
+  );
 };
