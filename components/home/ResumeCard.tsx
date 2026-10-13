@@ -40,8 +40,12 @@ const ResumeCard = () => {
   const songs = useSongsByIds(point ? [point.songId] : []);
   const song = point ? songs.get(point.songId) : undefined;
 
+  // Only offered to a signed-in listener with nothing playing.
+  if (!user || isPlaying) {
+    return null;
+  }
   // A deleted song never loads, so the card never shows for it.
-  if (!user || isPlaying || !point || !song) {
+  if (!point || !song) {
     return null;
   }
 
