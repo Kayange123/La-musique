@@ -1,5 +1,6 @@
 import { getAccountSummary } from "@/actions";
 import Heading from "@/components/ui/Heading";
+import { pageTitle } from "@/components/ui/styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -17,22 +18,20 @@ const AccountPage = async () => {
   ];
 
   return (
-    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
+    <div className="bg-surface rounded-xl h-full w-full overflow-hidden overflow-y-auto">
       <Heading>
-        <h1 className="text-white text-3xl font-semibold">Account</h1>
-        {account.email && (
-          <p className="text-neutral-300 mt-2">{account.email}</p>
-        )}
+        <h1 className={pageTitle}>Account</h1>
+        {account.email && <p className="text-muted mt-2">{account.email}</p>}
       </Heading>
       <div className="px-6 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
         {stats.map(({ label, value, href }) => (
           <Link
             key={href}
             href={href}
-            className="rounded-md bg-neutral-800 p-4 hover:bg-neutral-700 transition"
+            className="rounded-xl bg-raised p-5 hover:bg-overlay transition"
           >
-            <p className="text-3xl font-bold text-white">{value}</p>
-            <p className="text-neutral-400 text-sm">{label}</p>
+            <p className="font-display text-4xl font-bold text-fg">{value}</p>
+            <p className="text-muted text-sm">{label}</p>
           </Link>
         ))}
       </div>

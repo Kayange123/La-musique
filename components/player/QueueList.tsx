@@ -6,20 +6,19 @@ import usePlayer from "@/hooks/usePlayer";
 import useSongsByIds from "@/hooks/useSongsByIds";
 import { upcomingFromList } from "@/lib/playQueue";
 import MediaItem from "../ui/MediaItem";
+import { eyebrow, iconButton } from "../ui/styles";
 
 // How many upcoming list songs to show after the queue.
 const LIST_PREVIEW = 10;
 
-const headingClass =
-  "text-xs font-semibold uppercase tracking-wider text-neutral-400";
-const iconButtonClass =
-  "p-2 rounded-full text-neutral-400 hover:text-white disabled:opacity-30 disabled:hover:text-neutral-400";
+const headingClass = eyebrow;
+const iconButtonClass = iconButton;
 
 const SongRow = ({ song, onPlay }: { song?: ISong; onPlay?: () => void }) =>
   song ? (
     <MediaItem song={song} onClick={() => onPlay?.()} />
   ) : (
-    <div className="h-[66px] rounded-md bg-neutral-800/50" aria-hidden="true" />
+    <div className="h-16 rounded-lg bg-raised/50" aria-hidden="true" />
   );
 
 const QueueList = () => {
@@ -38,7 +37,7 @@ const QueueList = () => {
   const { removeQueued, moveQueued, clearQueued, setId } = usePlayer.getState();
 
   if (activeId === undefined) {
-    return <p className="text-neutral-400">Nothing is playing.</p>;
+    return <p className="text-muted">Nothing is playing.</p>;
   }
 
   return (
@@ -59,7 +58,7 @@ const QueueList = () => {
             <button
               type="button"
               onClick={clearQueued}
-              className="text-sm font-semibold text-neutral-400 hover:text-white"
+              className="text-sm font-semibold text-muted hover:text-fg"
             >
               Clear
             </button>

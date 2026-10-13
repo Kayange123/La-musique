@@ -41,7 +41,7 @@ const SeekBar = ({ sound, isPlaying }: SeekBarProps) => {
   };
 
   return (
-    <div className="flex items-center gap-x-2 w-full text-xs text-neutral-400 tabular-nums">
+    <div className="flex items-center gap-x-2 w-full max-w-[560px] font-mono text-xs text-muted tabular-nums">
       <span className="w-10 text-right">{formatTime(shown)}</span>
       <Slider
         label="Seek"

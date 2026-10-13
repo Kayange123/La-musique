@@ -76,9 +76,13 @@ const LikeButton = ({ songId }: LikeButtonProps) => {
       onClick={handleLike}
       aria-label={liked ? "Remove from liked songs" : "Add to liked songs"}
       aria-pressed={liked}
-      className="hover:opacity-75 transition"
+      className={`grid place-items-center h-10 w-10 shrink-0 rounded-full transition ${
+        liked
+          ? "text-accent hover:text-accent-hover"
+          : "text-muted hover:text-fg"
+      }`}
     >
-      <Icon color={liked ? "#22c55e" : "white"} size={25} />
+      <Icon size={20} aria-hidden="true" />
     </button>
   );
 };

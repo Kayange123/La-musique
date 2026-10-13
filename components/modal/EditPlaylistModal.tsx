@@ -74,7 +74,7 @@ const EditPlaylistForm = ({ playlist }: { playlist: IPlaylist }) => {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-y-4">
-      <label className="flex flex-col gap-y-1 text-sm font-semibold">
+      <label className="flex flex-col gap-y-1.5 text-sm font-semibold text-fg">
         Name
         <Input
           value={name}
@@ -84,10 +84,10 @@ const EditPlaylistForm = ({ playlist }: { playlist: IPlaylist }) => {
           required
         />
       </label>
-      <label className="flex flex-col gap-y-1 text-sm font-semibold">
+      <label className="flex flex-col gap-y-1.5 text-sm font-semibold text-fg">
         <span className="flex justify-between">
           Description
-          <span className="font-normal text-neutral-400">Optional</span>
+          <span className="font-normal text-muted">Optional</span>
         </span>
         <textarea
           value={description}
@@ -96,14 +96,14 @@ const EditPlaylistForm = ({ playlist }: { playlist: IPlaylist }) => {
           rows={3}
           disabled={isSaving}
           placeholder="What's this playlist for?"
-          className="rounded-md bg-neutral-700 p-3 text-sm font-normal placeholder:text-neutral-400 focus:outline-none"
+          className="rounded-lg border border-line bg-overlay p-3 text-[15px] font-normal text-fg placeholder:text-muted transition focus:border-accent"
         />
-        <span className="self-end text-xs font-normal text-neutral-400 tabular-nums">
+        <span className="self-end text-xs font-normal text-muted tabular-nums">
           {description.length} / {MAX_DESCRIPTION}
         </span>
       </label>
       <fieldset className="flex flex-col gap-y-2" disabled={isSaving}>
-        <legend className="mb-1 text-sm font-semibold">Cover</legend>
+        <legend className="mb-1 text-sm font-semibold text-fg">Cover</legend>
         {coverOptions.map((option) => (
           <label
             key={option.value}
@@ -115,7 +115,7 @@ const EditPlaylistForm = ({ playlist }: { playlist: IPlaylist }) => {
               value={option.value}
               checked={cover === option.value}
               onChange={() => setCover(option.value)}
-              className="h-4 w-4 accent-green-500"
+              className="h-4 w-4"
             />
             {option.label}
           </label>
@@ -126,13 +126,11 @@ const EditPlaylistForm = ({ playlist }: { playlist: IPlaylist }) => {
             accept={IMAGE_TYPES.join(",")}
             aria-label="Cover image"
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-            className="text-sm"
+            className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-raised file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-fg"
           />
         )}
       </fieldset>
-      <p className="text-sm text-neutral-400">
-        Only you can see this playlist.
-      </p>
+      <p className="text-sm text-muted">Only you can see this playlist.</p>
       <Button type="submit" disabled={isSaving}>
         {isSaving ? "Saving..." : "Save"}
       </Button>

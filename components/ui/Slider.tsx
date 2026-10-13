@@ -36,13 +36,13 @@ const Slider = ({
         className,
       )}
     >
-      <RadixSlider.Track className="bg-neutral-600 relative grow rounded-full h-[3px]">
-        <RadixSlider.Range className="absolute bg-white group-hover:bg-green-500 rounded-full h-full" />
+      <RadixSlider.Track className="bg-line-strong relative grow rounded-full h-[3px]">
+        <RadixSlider.Range className="absolute bg-fg group-hover:bg-accent rounded-full h-full" />
       </RadixSlider.Track>
       <RadixSlider.Thumb
         aria-label={label}
         aria-valuetext={valueText}
-        className="block h-3 w-3 rounded-full bg-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500"
+        className="block h-3 w-3 rounded-full bg-fg opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
       />
     </RadixSlider.Root>
   );

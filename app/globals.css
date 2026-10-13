@@ -6,12 +6,21 @@ html,
 body,
 :root {
   height: 100%;
-  background-color: black;
   color-scheme: dark;
+}
+
+body {
+  background-color: theme("colors.canvas");
+  color: theme("colors.fg");
 }
 
 /* Keyboard focus is always visible; mouse clicks don't show a ring. */
 :focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 2px solid theme("colors.accent");
   outline-offset: 2px;
+}
+
+/* Native controls (checkboxes, radios, sliders, progress) in the accent. */
+:root {
+  accent-color: theme("colors.accent");
 }

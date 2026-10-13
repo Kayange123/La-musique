@@ -6,7 +6,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, disabled, ...props }, ref) => (
     <input
       className={twMerge(
-        "flex w-full rounded-md border bg-neutral-700 border-transparent p-3 text-sm file:border-0 file:bg-transparent file:font-medium placeholder:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none",
+        "flex h-11 w-full rounded-lg border border-line bg-overlay px-3 text-[15px] text-fg transition file:border-0 file:bg-transparent file:font-medium file:text-fg placeholder:text-muted focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed",
         className,
       )}
       type={type}

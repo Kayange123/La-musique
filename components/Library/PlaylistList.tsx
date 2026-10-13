@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AiOutlinePlus } from "react-icons/ai";
-import { RiPlayListFill } from "react-icons/ri";
 import { twMerge } from "tailwind-merge";
 import { IPlaylist } from "@/types";
 import { useUser } from "@/hooks/useUser";
 import useAuthModal from "@/hooks/useAuthModal";
 import usePlaylistDialog from "@/hooks/usePlaylistDialog";
+import { tileColor } from "@/lib/theme";
+import { eyebrow } from "../ui/styles";
 
 interface PlaylistListProps {
   playlists: IPlaylist[];
@@ -24,24 +25,21 @@ const PlaylistList = ({ playlists }: PlaylistListProps) => {
 
   return (
     <section aria-labelledby="playlists-heading" className="px-2 mt-4">
-      <div className="flex items-center justify-between px-3">
-        <h2
-          id="playlists-heading"
-          className="text-sm font-medium text-neutral-500"
-        >
+      <div className="flex items-center justify-between px-2">
+        <h2 id="playlists-heading" className={eyebrow}>
           Playlists
         </h2>
         <button
           type="button"
           onClick={onCreate}
-          aria-label="New playlist"
-          className="text-neutral-500 hover:text-white transition"
+          className="flex items-center gap-x-1 rounded-full px-2 py-1.5 text-sm font-semibold text-muted transition hover:text-fg"
         >
-          <AiOutlinePlus size={20} aria-hidden="true" />
+          <AiOutlinePlus size={16} aria-hidden="true" />
+          New playlist
         </button>
       </div>
       {playlists.length === 0 ? (
-        <p className="text-neutral-500 text-xs pl-3 mt-2">
+        <p className="text-muted text-sm px-2 mt-2">
           Create a playlist to group songs.
         </p>
       ) : (
@@ -55,11 +53,17 @@ const PlaylistList = ({ playlists }: PlaylistListProps) => {
                   href={href}
                   aria-current={active ? "page" : undefined}
                   className={twMerge(
-                    "flex items-center gap-x-3 rounded-md p-2 text-neutral-400 hover:bg-neutral-800/80 hover:text-white",
-                    active && "text-white bg-neutral-800/80",
+                    "flex items-center gap-x-3 rounded-lg p-2 text-fg transition hover:bg-raised",
+                    active && "bg-raised font-semibold",
                   )}
                 >
-                  <RiPlayListFill size={20} aria-hidden="true" />
+                  <span
+                    aria-hidden="true"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-md font-display text-lg font-bold text-on-accent"
+                    style={{ backgroundColor: tileColor(playlist.id) }}
+                  >
+                    {playlist.name.trim().charAt(0).toUpperCase()}
+                  </span>
                   <span className="truncate">{playlist.name}</span>
                 </Link>
               </li>
