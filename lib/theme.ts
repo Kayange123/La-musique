@@ -7,6 +7,7 @@ export const colors = {
   surface: "#17181A", // panels: sidebar, main area, queue
   raised: "#202226", // cards, rows on hover, chips
   overlay: "#26282C", // dialogs' inputs and menus
+  band: "#2B2620", // the warm header band on playlist pages
   line: "#2A2D31", // dividers and borders
   "line-strong": "#4A4D52", // outlined buttons
   // Text.
@@ -24,11 +25,23 @@ export const colors = {
 
 export type ColorToken = keyof typeof colors;
 
+// Playlist tiles: a light colour per playlist, with its initial in
+// on-accent on top.
+export const tileColors = [
+  "#FFB27A",
+  "#9DB8F5",
+  "#C8E3A1",
+  "#D3B5F2",
+  "#F2D58A",
+] as const;
+
+export const tileColor = (id: number) => tileColors[id % tileColors.length];
+
 // Which text colours are used on which backgrounds. The contrast test
 // checks every pair listed here.
 export const textOn: Record<string, ColorToken[]> = {
-  fg: ["canvas", "surface", "raised", "overlay"],
-  muted: ["canvas", "surface", "raised", "overlay"],
+  fg: ["canvas", "surface", "raised", "overlay", "band"],
+  muted: ["canvas", "surface", "raised", "overlay", "band"],
   subtle: ["canvas", "surface"],
   accent: ["canvas", "surface", "raised"],
   danger: ["canvas", "surface", "raised", "overlay"],

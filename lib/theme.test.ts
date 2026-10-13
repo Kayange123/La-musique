@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ColorToken, colors, textOn } from "./theme";
+import { ColorToken, colors, textOn, tileColors } from "./theme";
 
 // WCAG 2 relative luminance and contrast ratio.
 const luminance = (hex: string) => {
@@ -18,6 +18,12 @@ const contrast = (a: string, b: string) => {
 const pairs = Object.entries(textOn).flatMap(([text, backgrounds]) =>
   backgrounds.map((background) => [text as ColorToken, background] as const),
 );
+
+describe("playlist tiles", () => {
+  it.each(tileColors)("on-accent initial on %s meets WCAG AA", (tile) => {
+    expect(contrast(colors["on-accent"], tile)).toBeGreaterThanOrEqual(4.5);
+  });
+});
 
 describe("theme contrast", () => {
   it.each(pairs)("%s text on %s meets WCAG AA (4.5:1)", (text, background) => {

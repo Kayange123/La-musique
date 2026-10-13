@@ -8,8 +8,11 @@ import Image from "next/image";
 interface MediaItemProps {
   onClick: (id: number) => void;
   song: ISong;
+  wrapTitle?: boolean;
 }
-const MediaItem = ({ onClick, song }: MediaItemProps) => {
+const MediaItem = ({ onClick, song, wrapTitle = false }: MediaItemProps) => {
+  // The player shows long titles on two lines instead of cutting them off.
+  const titleClass = wrapTitle ? "line-clamp-2 leading-tight" : "truncate";
   const imageUrl = useLoadImage(song);
 
   const handleClick = () => {
@@ -22,9 +25,9 @@ const MediaItem = ({ onClick, song }: MediaItemProps) => {
     <button
       type="button"
       onClick={handleClick}
-      className="flex text-left items-center gap-x-3 cursor-pointer hover:bg-neutral-800/80 w-full p-2 rounded-md"
+      className="flex flex-1 min-w-0 text-left items-center gap-x-3 cursor-pointer hover:bg-raised p-2 rounded-lg transition"
     >
-      <div className="relative rounded-md min-h-[50px] max-w-[50px] overflow-hidden h-full w-full">
+      <div className="relative rounded-md h-12 w-12 shrink-0 overflow-hidden">
         <Image
           src={imageUrl || defaultImage}
           alt=""
@@ -32,11 +35,9 @@ const MediaItem = ({ onClick, song }: MediaItemProps) => {
           fill
         />
       </div>
-      <div className="flex flex-col gap-y-1 overflow-hidden">
-        <p className="text-base md:text-lg truncate text-white">
-          {song?.title}
-        </p>
-        <p className="text-neutral-400 text-sm truncate">{song?.author}</p>
+      <div className="flex flex-col overflow-hidden">
+        <p className={`font-medium text-fg ${titleClass}`}>{song?.title}</p>
+        <p className="text-muted text-sm truncate">{song?.author}</p>
       </div>
     </button>
   );

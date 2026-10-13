@@ -12,7 +12,7 @@ const MobileNav = () => {
   return (
     <nav
       aria-label="Main"
-      className="md:hidden fixed bottom-0 inset-x-0 h-16 bg-black border-t border-neutral-800 flex"
+      className="md:hidden fixed bottom-0 inset-x-0 h-16 bg-canvas border-t border-line flex"
     >
       {getNavRoutes(pathname).map(({ icon: Icon, label, href, active }) => (
         <Link
@@ -20,8 +20,8 @@ const MobileNav = () => {
           href={href}
           aria-current={active ? "page" : undefined}
           className={twMerge(
-            "flex-1 flex flex-col items-center justify-center gap-y-1 text-xs text-neutral-400",
-            active && "text-white",
+            "flex-1 flex flex-col items-center justify-center gap-y-1 text-xs text-muted transition",
+            active && "font-semibold text-fg",
           )}
         >
           <Icon size={22} aria-hidden="true" />
