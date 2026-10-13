@@ -5,7 +5,7 @@ import UploadModal from "@/components/modal/UploadModal";
 import EditSongModal from "@/components/modal/EditSongModal";
 import DeleteSongModal from "@/components/modal/DeleteSongModal";
 import CreatePlaylistModal from "@/components/modal/CreatePlaylistModal";
-import RenamePlaylistModal from "@/components/modal/RenamePlaylistModal";
+import EditPlaylistModal from "@/components/modal/EditPlaylistModal";
 import DeletePlaylistModal from "@/components/modal/DeletePlaylistModal";
 import AddToPlaylistModal from "@/components/modal/AddToPlaylistModal";
 
@@ -17,7 +17,7 @@ const ModalProvider = () => {
       <EditSongModal />
       <DeleteSongModal />
       <CreatePlaylistModal />
-      <RenamePlaylistModal />
+      <EditPlaylistModal />
       <DeletePlaylistModal />
       <AddToPlaylistModal />
     </>

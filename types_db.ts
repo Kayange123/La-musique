@@ -111,17 +111,20 @@ export type Database = {
         Row: {
           added_at: string;
           playlist_id: number;
+          position: number;
           song_id: number;
         };
         ComputedFields: never;
         Insert: {
           added_at?: string;
           playlist_id: number;
+          position?: number;
           song_id: number;
         };
         Update: {
           added_at?: string;
           playlist_id?: number;
+          position?: number;
           song_id?: number;
         };
         Relationships: [
@@ -143,20 +146,26 @@ export type Database = {
       };
       playlists: {
         Row: {
+          cover_path: string | null;
           created_at: string;
+          description: string | null;
           id: number;
           name: string;
           user_id: string;
         };
         ComputedFields: never;
         Insert: {
+          cover_path?: string | null;
           created_at?: string;
+          description?: string | null;
           id?: number;
           name: string;
           user_id?: string;
         };
         Update: {
+          cover_path?: string | null;
           created_at?: string;
+          description?: string | null;
           id?: number;
           name?: string;
           user_id?: string;
