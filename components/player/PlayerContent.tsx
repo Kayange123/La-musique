@@ -24,6 +24,10 @@ import { getShortcutAction } from "@/lib/shortcuts";
 import { getPlaybackFormat } from "@/lib/upload";
 import usePlayer from "@/hooks/usePlayer";
 import { Step } from "@/lib/playQueue";
+import useRecordPlay from "@/hooks/useRecordPlay";
+import useSaveResumePoint, {
+  clearResumePoint,
+} from "@/hooks/useSaveResumePoint";
 import useSound from "use-sound";
 
 interface PlayerProps {
@@ -63,11 +67,19 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const onPlayNext = () => restartIfSame(usePlayer.getState().next("manual"));
   const onPlayPrevious = () => restartIfSame(usePlayer.getState().previous());
 
+  const { onEnded: recordIfEnded } = useRecordPlay({
+    songId: song.id,
+    isPlaying,
+  });
+
   const [play, { pause, sound }] = useSound(songUrl, {
     volume: volume,
     onplay: () => setIsPlaying(true),
     onend: () => {
       setIsPlaying(false);
+      recordIfEnded();
+      // Finished songs aren't worth resuming.
+      clearResumePoint();
       restartIfSame(usePlayer.getState().next("ended"));
     },
     onpause: () => setIsPlaying(false),
@@ -78,13 +90,26 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
     soundRef.current = sound;
   }, [sound]);
 
+  useSaveResumePoint({ songId: song.id, sound, isPlaying });
+
   useEffect(() => {
-    sound?.play();
+    // The first run is before use-sound has created the sound; taking the
+    // pending seek then would lose it.
+    if (!sound) {
+      return;
+    }
+    // Resuming: start where the listener left off. Howler applies the
+    // seek once the file has loaded.
+    const resumeAt = usePlayer.getState().takePendingSeek(song.id);
+    if (resumeAt !== undefined) {
+      sound.seek(resumeAt);
+    }
+    sound.play();
 
     return () => {
       sound?.unload();
     };
-  }, [sound]);
+  }, [sound, song.id]);
 
   const handlePlay = () => {
     if (!isPlaying) {
