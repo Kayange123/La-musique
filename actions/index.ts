@@ -1,6 +1,7 @@
 import { IPlaylist, ISong } from "@/types";
 import { createClient, getUserId } from "@/lib/supabase/server";
 import { latestDistinct } from "@/lib/history";
+import { PlaylistEntry } from "@/lib/playlistOrder";
 
 export const getSongs = async (): Promise<ISong[]> => {
   const supabase = await createClient();
@@ -128,11 +129,18 @@ export const getPlaylists = async (): Promise<IPlaylist[]> => {
   return data ?? [];
 };
 
+export interface PlaylistPageData {
+  playlist: IPlaylist;
+  entries: PlaylistEntry[];
+  // One uploaded cover, or up to four song covers for a mosaic.
+  coverUrls: string[];
+}
+
 // Returns null for a missing playlist and for someone else's (RLS hides
 // it), so the page can't reveal whether a playlist exists.
 export const getPlaylist = async (
   playlistId: number,
-): Promise<{ playlist: IPlaylist; songs: ISong[] } | null> => {
+): Promise<PlaylistPageData | null> => {
   const supabase = await createClient();
 
   const { data: playlist } = await supabase
@@ -147,14 +155,26 @@ export const getPlaylist = async (
 
   const { data: rows } = await supabase
     .from("playlist_songs")
-    .select("songs(*)")
+    .select("position, added_at, songs(*)")
     .eq("playlist_id", playlistId)
-    .order("added_at", { ascending: true });
+    .order("position", { ascending: true });
 
-  return {
-    playlist,
-    songs: (rows ?? []).flatMap((row) => (row.songs ? [row.songs] : [])),
-  };
+  const entries: PlaylistEntry[] = (rows ?? []).flatMap((row) =>
+    row.songs
+      ? [{ song: row.songs, position: row.position, addedAt: row.added_at }]
+      : [],
+  );
+
+  const publicUrl = (path: string) =>
+    supabase.storage.from("images").getPublicUrl(path).data.publicUrl;
+  const coverUrls = playlist.cover_path
+    ? [publicUrl(playlist.cover_path)]
+    : entries
+        .flatMap(({ song }) => (song.image_path ? [song.image_path] : []))
+        .slice(0, 4)
+        .map(publicUrl);
+
+  return { playlist, entries, coverUrls };
 };
 
 const RECENTLY_PLAYED = 8;

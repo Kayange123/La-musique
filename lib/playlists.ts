@@ -57,7 +57,7 @@ export const createPlaylist = async (
 
 // Runs an update or delete on one of the user's playlists, failing if RLS
 // matched nothing.
-const changeOwnPlaylist = async (
+export const changeOwnPlaylist = async (
   query: PromiseLike<{
     data: unknown[] | null;
     error: { message: string } | null;
@@ -65,24 +65,24 @@ const changeOwnPlaylist = async (
   failure: string,
 ) => expectRows(await query, failure);
 
-export const renamePlaylist = (
+export const deletePlaylist = async (
   supabase: Client,
-  playlist: PlaylistRef & { name: string },
-) =>
-  changeOwnPlaylist(
-    supabase
-      .from("playlists")
-      .update({ name: cleanPlaylistName(playlist.name) })
-      .eq("id", playlist.id)
-      .select("id"),
-    "Couldn't rename this playlist",
-  );
-
-export const deletePlaylist = (supabase: Client, playlist: PlaylistRef) =>
-  changeOwnPlaylist(
+  playlist: PlaylistRef & { cover_path?: string | null },
+) => {
+  await changeOwnPlaylist(
     supabase.from("playlists").delete().eq("id", playlist.id).select("id"),
     "Couldn't delete this playlist",
   );
+  if (playlist.cover_path) {
+    // The playlist is gone; a leftover cover file is harmless.
+    const { error } = await supabase.storage
+      .from("images")
+      .remove([playlist.cover_path]);
+    if (error) {
+      console.error("Playlist deleted but its cover remains", error);
+    }
+  }
+};
 
 export const addSongToPlaylist = async (
   supabase: Client,

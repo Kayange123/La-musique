@@ -7,7 +7,6 @@ import {
   listPlaylists,
   parsePlaylistId,
   removeSongFromPlaylist,
-  renamePlaylist,
 } from "./playlists";
 
 type Result = {
@@ -80,26 +79,20 @@ describe("createPlaylist", () => {
   });
 });
 
-describe("renamePlaylist and deletePlaylist", () => {
-  it("succeed when RLS matched the row", async () => {
+describe("deletePlaylist", () => {
+  it("succeeds when RLS matched the row", async () => {
     const { client, calls } = fakeClient({ data: [{ id: 3 }] });
-    await renamePlaylist(client, { id: 3, name: "New name" });
+    await expect(deletePlaylist(client, { id: 3 })).resolves.toBeUndefined();
     expect(calls.filters).toEqual([["id", 3]]);
-    await expect(
-      deletePlaylist(fakeClient({ data: [{ id: 3 }] }).client, { id: 3 }),
-    ).resolves.toBeUndefined();
   });
 
-  it("fail when RLS matched nothing (someone else's playlist)", async () => {
-    await expect(
-      renamePlaylist(fakeClient({ data: [] }).client, { id: 3, name: "x" }),
-    ).rejects.toThrow("Couldn't rename this playlist");
+  it("fails when RLS matched nothing (someone else's playlist)", async () => {
     await expect(
       deletePlaylist(fakeClient({ data: [] }).client, { id: 3 }),
     ).rejects.toThrow("Couldn't delete this playlist");
   });
 
-  it("pass database errors through", async () => {
+  it("passes database errors through", async () => {
     await expect(
       deletePlaylist(
         fakeClient({ error: { message: "network down" } }).client,

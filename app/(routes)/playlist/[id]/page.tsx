@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { getPlaylist } from "@/actions";
-import { defaultImage } from "@/common.constant";
+import PlaylistCover from "@/components/playlist/PlaylistCover";
 import Heading from "@/components/ui/Heading";
 import PlaylistContent from "@/components/playlist/PlaylistContent";
 import { parsePlaylistId } from "@/lib/playlists";
@@ -21,26 +20,29 @@ const PlaylistPage = async ({
     notFound();
   }
 
-  const { playlist, songs } = result;
+  const { playlist, entries, coverUrls } = result;
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
       <Heading>
         <div className="mt-20 flex flex-col md:flex-row items-center gap-5">
-          <div className="relative h-32 w-32 lg:h-44 lg:w-44">
-            <Image src={defaultImage} alt="" fill className="object-cover" />
-          </div>
+          <PlaylistCover urls={coverUrls} />
           <div className="flex flex-col gap-y-2">
             <p className="hidden md:block font-semibold text-sm">Playlist</p>
             <h1 className="text-white text-3xl md:text-5xl font-bold break-words">
               {playlist.name}
             </h1>
+            {playlist.description && (
+              <p className="text-neutral-300 max-w-prose">
+                {playlist.description}
+              </p>
+            )}
             <p className="text-neutral-400 text-sm">
-              {songs.length} {songs.length === 1 ? "song" : "songs"}
+              {entries.length} {entries.length === 1 ? "song" : "songs"}
             </p>
           </div>
         </div>
       </Heading>
-      <PlaylistContent playlist={playlist} songs={songs} />
+      <PlaylistContent playlist={playlist} entries={entries} />
     </div>
   );
 };
