@@ -1,5 +1,6 @@
 "use client";
 
+import SongMenu from "@/components/ui/SongMenu";
 import { TbPlaylist } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useUser } from "@/hooks/useUser";
@@ -52,6 +53,7 @@ const Library = ({ songs, playlists }: LibraryProps) => {
           songs.map((song) => (
             <div key={song.id} className="group flex items-center gap-x-1">
               <MediaItem onClick={(id: number) => onPlay(id)} song={song} />
+              <SongMenu song={song} />
               {user?.id === song.user_id && (
                 <div className="flex gap-x-1 pr-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                   <button

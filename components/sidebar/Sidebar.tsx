@@ -8,6 +8,7 @@ import { IPlaylist, ISong } from "@/types";
 import usePlayer from "@/hooks/usePlayer";
 import { twMerge } from "tailwind-merge";
 import { getNavRoutes } from "../nav/navRoutes";
+import QueuePanel from "../player/QueuePanel";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -43,6 +44,7 @@ const Sidebar = ({ children, songs, playlists }: SidebarProps) => {
         </Container>
       </div>
       <main className="h-full flex-1 overflow-y-auto py-2">{children}</main>
+      <QueuePanel />
     </div>
   );
 };

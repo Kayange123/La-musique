@@ -5,6 +5,8 @@ import MediaItem from "../ui/MediaItem";
 import LikeButton from "../ui/LikeButton";
 import { RiPlayListAddLine } from "react-icons/ri";
 import usePlaylistDialog from "@/hooks/usePlaylistDialog";
+import useQueuePanel from "@/hooks/useQueuePanel";
+import { MdQueueMusic } from "react-icons/md";
 import { IconType } from "react-icons";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import {
@@ -21,7 +23,7 @@ import useLoadImage from "@/hooks/useLoadImage";
 import { getShortcutAction } from "@/lib/shortcuts";
 import { getPlaybackFormat } from "@/lib/upload";
 import usePlayer from "@/hooks/usePlayer";
-import { getAutoNextId, getNextId, getPreviousId } from "@/lib/queue";
+import { Step } from "@/lib/playQueue";
 import useSound from "use-sound";
 
 interface PlayerProps {
@@ -31,6 +33,8 @@ interface PlayerProps {
 const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const imageUrl = useLoadImage(song);
   const openAddSong = usePlaylistDialog((state) => state.openAddSong);
+  const queueOpen = useQueuePanel((state) => state.isOpen);
+  const toggleQueue = useQueuePanel((state) => state.toggle);
   const volume = usePlayer((state) => state.volume);
   const setVolume = usePlayer((state) => state.setVolume);
   const toggleMute = usePlayer((state) => state.toggleMute);
@@ -47,36 +51,24 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   // toggling shuffle or repeat mid-song applies to the current song too.
   const soundRef = useRef<ReturnType<typeof useSound>[1]["sound"]>(null);
 
-  const goTo = (id: number | undefined) => {
-    const { activeId, setId } = usePlayer.getState();
-    if (id === undefined) {
-      return;
-    }
-    if (id === activeId) {
-      // Same song: nothing re-renders, so restart it here.
+  // The store decides what plays next. When the answer is the song that's
+  // already playing, nothing re-renders, so restart it here.
+  const restartIfSame = (step: Step | null) => {
+    if (step?.restart) {
       soundRef.current?.seek(0);
       soundRef.current?.play();
-      return;
     }
-    setId(id);
   };
 
-  const onPlayNext = () => {
-    const { queue, activeId } = usePlayer.getState();
-    goTo(getNextId(queue, activeId));
-  };
-  const onPlayPrevious = () => {
-    const { queue, activeId } = usePlayer.getState();
-    goTo(getPreviousId(queue, activeId));
-  };
+  const onPlayNext = () => restartIfSame(usePlayer.getState().next("manual"));
+  const onPlayPrevious = () => restartIfSame(usePlayer.getState().previous());
 
   const [play, { pause, sound }] = useSound(songUrl, {
     volume: volume,
     onplay: () => setIsPlaying(true),
     onend: () => {
       setIsPlaying(false);
-      const { queue, activeId, repeat } = usePlayer.getState();
-      goTo(getAutoNextId(queue, activeId, repeat));
+      restartIfSame(usePlayer.getState().next("ended"));
     },
     onpause: () => setIsPlaying(false),
     format: [getPlaybackFormat(song.song_path ?? "")],
@@ -211,6 +203,19 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
             className="text-neutral-400 hover:text-white transition"
           >
             <RiPlayListAddLine size={22} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={toggleQueue}
+            aria-label="Up next"
+            aria-pressed={queueOpen}
+            className={
+              queueOpen
+                ? "text-green-500"
+                : "text-neutral-400 hover:text-white transition"
+            }
+          >
+            <MdQueueMusic size={24} aria-hidden="true" />
           </button>
         </div>
       </div>

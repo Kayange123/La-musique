@@ -1,5 +1,6 @@
 "use client";
 
+import SongMenu from "@/components/ui/SongMenu";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
@@ -78,6 +79,7 @@ const PlaylistContent = ({ playlist, songs }: PlaylistContentProps) => {
             <li key={song.id} className="flex items-center gap-x-2">
               <MediaItem song={song} onClick={(id) => onPlay(id)} />
               <LikeButton songId={song.id} />
+              <SongMenu song={song} />
               <button
                 type="button"
                 onClick={() => onRemove(song)}
