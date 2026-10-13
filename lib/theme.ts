@@ -18,6 +18,9 @@ export const colors = {
   accent: "#FF8A3D",
   "accent-hover": "#FFB27A",
   "on-accent": "#0D0E0C",
+  // Secondary text on light backgrounds (fg), e.g. the search box's
+  // placeholder.
+  "on-light-muted": "#5E5E58",
   // Destructive actions.
   danger: "#FF7A6B", // text and icons
   "danger-bg": "#E5533F", // filled buttons, with on-accent text
@@ -46,4 +49,5 @@ export const textOn: Record<string, ColorToken[]> = {
   accent: ["canvas", "surface", "raised"],
   danger: ["canvas", "surface", "raised", "overlay"],
   "on-accent": ["accent", "accent-hover", "danger-bg", "fg"],
+  "on-light-muted": ["fg"],
 };

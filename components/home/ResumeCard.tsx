@@ -9,6 +9,7 @@ import usePlayer from "@/hooks/usePlayer";
 import useSongsByIds from "@/hooks/useSongsByIds";
 import { useUser } from "@/hooks/useUser";
 import MediaItem from "../ui/MediaItem";
+import { eyebrow, playButton } from "../ui/styles";
 
 const readSavedPoint = () => {
   try {
@@ -58,26 +59,23 @@ const ResumeCard = () => {
   return (
     <section
       aria-labelledby="resume-heading"
-      className="rounded-lg bg-neutral-800 p-4 flex flex-col gap-y-3 max-w-xl"
+      className="rounded-xl bg-raised p-4 flex flex-col gap-y-3 max-w-xl"
     >
-      <h2
-        id="resume-heading"
-        className="text-xs font-semibold uppercase tracking-wider text-neutral-400"
-      >
+      <h2 id="resume-heading" className={eyebrow}>
         Pick up where you left off
       </h2>
       <div className="flex items-center gap-x-3">
         <div className="flex-1 min-w-0">
           <MediaItem song={song} onClick={resume} />
         </div>
-        <span className="text-sm text-neutral-400 tabular-nums">
+        <span className="font-mono text-sm text-muted tabular-nums">
           {formatTime(point.position)}
         </span>
         <button
           type="button"
           onClick={resume}
           aria-label={`Resume ${song.title} from ${formatTime(point.position)}`}
-          className="rounded-full bg-green-500 p-3 text-black hover:scale-105 transition"
+          className={`${playButton} h-12 w-12`}
         >
           <BsPlayFill size={22} aria-hidden="true" />
         </button>
@@ -85,7 +83,7 @@ const ResumeCard = () => {
       <button
         type="button"
         onClick={dismiss}
-        className="self-start text-sm font-semibold text-neutral-400 hover:text-white"
+        className="self-start text-sm font-semibold text-muted hover:text-fg"
       >
         Not now
       </button>

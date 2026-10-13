@@ -7,12 +7,15 @@ import { twMerge } from "tailwind-merge";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
-import Button from "./Button";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useSupabase } from "@/providers/Supabase";
 import { useUser } from "@/hooks/useUser";
 import { FaUserAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { pillOutline } from "./styles";
+
+const navButton =
+  "grid h-9 w-9 place-items-center rounded-full bg-canvas text-fg transition hover:bg-raised";
 
 interface HeadingProps {
   children: React.ReactNode;
@@ -34,80 +37,72 @@ const Heading = ({ children, className }: HeadingProps) => {
     }
     router.refresh();
   };
+  // The account button shows the first letter of the email.
+  const initial = user?.email?.charAt(0).toUpperCase() ?? "";
+
   return (
-    <div
-      className={twMerge(
-        "h-fit bg-gradient-to-b from-emerald-900 p-6",
-        className,
-      )}
-    >
-      <div className="w-full mb-4 flex items-center justify-between">
+    <div className={twMerge("h-fit px-6 pt-5 pb-6", className)}>
+      <div className="w-full mb-6 flex items-center justify-between gap-x-3">
         <div className="hidden md:flex gap-x-2 items-center">
           <button
             type="button"
             aria-label="Go back"
             onClick={() => router.back()}
-            className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition"
+            className={navButton}
           >
-            <RxCaretLeft size={30} className="text-white" />
+            <RxCaretLeft size={24} aria-hidden="true" />
           </button>
           <button
             type="button"
             aria-label="Go forward"
             onClick={() => router.forward()}
-            className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition"
+            className={navButton}
           >
-            <RxCaretRight size={30} className="text-white" />
+            <RxCaretRight size={24} aria-hidden="true" />
           </button>
         </div>
-        <div className="flex md:hidden gap-x-3 items-center">
-          <Link
-            href="/"
-            aria-label="Home"
-            className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center"
-          >
-            <HiHome className="text-black" size={20} aria-hidden="true" />
+        <div className="flex md:hidden gap-x-2 items-center">
+          <Link href="/" aria-label="Home" className={navButton}>
+            <HiHome size={18} aria-hidden="true" />
           </Link>
-          <Link
-            href="/search"
-            aria-label="Search"
-            className="bg-white rounded-full p-2 hover:opacity-75 transition flex items-center justify-center"
-          >
-            <BiSearch className="text-black" size={20} aria-hidden="true" />
+          <Link href="/search" aria-label="Search" className={navButton}>
+            <BiSearch size={18} aria-hidden="true" />
           </Link>
         </div>
-        <div className="flex justify-between items-center gap-x-4">
+        <div className="flex items-center gap-x-2">
           {user ? (
-            <div className="flex items-center gap-x-4">
-              <Button onClick={handleLogout} className="bg-white px-3 py-2">
-                Logout
-              </Button>
+            <>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={pillOutline}
+              >
+                Log out
+              </button>
               <Link
                 href="/account"
                 aria-label="Account"
-                className="rounded-full bg-white p-3 text-black hover:opacity-75 transition"
+                className="grid h-10 w-10 place-items-center rounded-full bg-accent font-display text-lg font-bold text-on-accent transition hover:bg-accent-hover"
               >
-                <FaUserAlt size={20} aria-hidden="true" />
+                {initial || <FaUserAlt size={16} aria-hidden="true" />}
               </Link>
-            </div>
+            </>
           ) : (
             <>
-              <div className="">
-                <Button
-                  onClick={authModal.onOpen}
-                  className="bg-transparent font-medium text-neutral-300"
-                >
-                  Sign up
-                </Button>
-              </div>
-              <div>
-                <Button
-                  onClick={authModal.onOpen}
-                  className="bg-white px-4 py-2"
-                >
-                  Sign in
-                </Button>
-              </div>
+              <button
+                type="button"
+                onClick={authModal.onOpen}
+                className="rounded-full px-4 py-2 text-sm font-semibold text-muted transition hover:text-fg"
+              >
+                Sign up
+              </button>
+              <button
+                type="button"
+                onClick={authModal.onOpen}
+                className="rounded-full bg-fg px-5 py-2 text-sm font-bold text-on-accent transition hover:scale-105"
+              >
+                Sign in
+              </button>
             </>
           )}
         </div>

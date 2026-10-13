@@ -12,12 +12,12 @@ const PageContent = ({ songs }: PageContentProps) => {
   if (songs.length === 0) {
     return (
       <div className="my-4">
-        <p className="text-neutral-400">No songs available</p>
+        <p className="text-muted">No songs yet.</p>
       </div>
     );
   }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 2xl:grid-cols-8 xl:grid-cols-5 gap-4 mt-4">
+    <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-x-5 gap-y-6">
       {songs.map((song) => (
         <SongItem
           key={song.id}

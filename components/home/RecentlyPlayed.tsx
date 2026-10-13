@@ -3,6 +3,7 @@
 import { ISong } from "@/types";
 import { useUser } from "@/hooks/useUser";
 import PageContent from "../pageContent/PageContent";
+import { sectionTitle } from "../ui/styles";
 
 // "Jump back in". The songs come from the server, but the section is also
 // hidden in the browser as soon as nobody is signed in, so a previous
@@ -16,10 +17,7 @@ const RecentlyPlayed = ({ songs }: { songs: ISong[] }) => {
 
   return (
     <section aria-labelledby="recent-heading">
-      <h2
-        id="recent-heading"
-        className="text-white font-semibold text-base md:text-2xl"
-      >
+      <h2 id="recent-heading" className={sectionTitle}>
         Jump back in
       </h2>
       <PageContent songs={songs} />

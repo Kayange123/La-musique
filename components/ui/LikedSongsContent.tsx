@@ -24,14 +24,16 @@ const LikedSongsContent = ({ songs }: LikedContent) => {
   }, [isLoading, router, user]);
 
   return (
-    <div className="flex flex-col gap-y-2 w-full px-6 ">
+    <div className="flex flex-col gap-y-1 w-full px-6 pt-6 pb-10">
       {songs.length === 0 ? (
-        <p className="text-neutral-400">No liked songs</p>
+        <p className="text-muted">
+          Songs you like appear here. Tap the heart on any song.
+        </p>
       ) : (
         <>
           {songs.map((song) => (
-            <div className="flex items-center gap-x-4 w-full" key={song?.id}>
-              <div className="flex-1">
+            <div className="flex items-center gap-x-1 w-full" key={song?.id}>
+              <div className="flex-1 min-w-0">
                 <MediaItem song={song} onClick={(id: number) => onPlay(id)} />
               </div>
               <LikeButton songId={song?.id} />

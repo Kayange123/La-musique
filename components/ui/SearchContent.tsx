@@ -13,14 +13,14 @@ interface SearchContentProps {
 const SearchContent = ({ songs }: SearchContentProps) => {
   const onPlay = useOnPlay(songs);
   return (
-    <div className="flex flex-col gap-y-2 w-full py-3 px-6">
+    <div className="flex flex-col gap-y-1 w-full px-6 pb-10">
       {songs.length === 0 ? (
-        <p className="text-neutral-400">No songs found</p>
+        <p className="text-muted">No songs match that title.</p>
       ) : (
         <>
           {songs.map((song) => (
-            <div key={song?.id} className="flex items-center w-full gap-x-4">
-              <div className="flex-1">
+            <div key={song?.id} className="flex items-center w-full gap-x-1">
+              <div className="flex-1 min-w-0">
                 <MediaItem song={song} onClick={(id: number) => onPlay(id)} />
               </div>
               <LikeButton songId={song?.id} />
