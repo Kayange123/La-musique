@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FiShare, FiX } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 import usePlayer from "@/hooks/usePlayer";
+import { iconButton, pillAccent, pillOutline } from "../ui/styles";
 import {
   INSTALL_DISMISSED_KEY,
   InstallMethod,
@@ -107,7 +108,7 @@ const InstallPrompt = () => {
     <section
       aria-labelledby="install-heading"
       className={twMerge(
-        "md:hidden fixed inset-x-2 z-40 rounded-xl border border-neutral-700 bg-neutral-900 p-4 shadow-2xl flex flex-col gap-y-3",
+        "md:hidden fixed inset-x-2 z-40 rounded-xl border border-line bg-surface p-4 shadow-2xl flex flex-col gap-y-3",
         // Sit above the tab bar, and above the player when it's showing.
         hasPlayer ? "bottom-[calc(4rem+88px)]" : "bottom-[calc(4rem+8px)]",
       )}
@@ -122,10 +123,13 @@ const InstallPrompt = () => {
           className="rounded-xl"
         />
         <div className="flex-1">
-          <h2 id="install-heading" className="font-semibold">
+          <h2
+            id="install-heading"
+            className="font-display text-lg font-bold leading-tight"
+          >
             Add La-musique to your home screen
           </h2>
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm text-muted">
             Opens full screen, with lock-screen controls. No app store needed.
           </p>
         </div>
@@ -133,7 +137,7 @@ const InstallPrompt = () => {
           type="button"
           onClick={dismiss}
           aria-label="Not now"
-          className="p-1 text-neutral-400 hover:text-white"
+          className={iconButton}
         >
           <FiX size={20} aria-hidden="true" />
         </button>
@@ -143,14 +147,14 @@ const InstallPrompt = () => {
           <button
             type="button"
             onClick={dismiss}
-            className="flex-1 rounded-full border border-neutral-600 py-2.5 font-semibold"
+            className={`${pillOutline} flex-1 py-2.5`}
           >
             Not now
           </button>
           <button
             type="button"
             onClick={install}
-            className="flex-1 rounded-full bg-green-500 py-2.5 font-bold text-black"
+            className={`${pillAccent} flex-1 py-2.5`}
           >
             Install
           </button>

@@ -49,14 +49,14 @@ const DeleteSongModal = () => {
         <Button
           onClick={close}
           disabled={isDeleting}
-          className="bg-neutral-700 text-white"
+          className="bg-raised text-fg hover:bg-overlay"
         >
           Cancel
         </Button>
         <Button
           onClick={onDelete}
           disabled={isDeleting}
-          className="bg-red-500 text-white"
+          className="bg-danger-bg text-on-accent hover:bg-danger"
         >
           {isDeleting ? "Deleting..." : "Delete"}
         </Button>

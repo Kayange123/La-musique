@@ -19,6 +19,11 @@ import {
   toSafeFileName,
 } from "@/lib/upload";
 
+const fieldLabel = "flex flex-col gap-y-1.5 text-sm font-semibold text-fg";
+// Native file pickers, styled to match: a pill button and the file name.
+const fileInput =
+  "h-auto py-2 file:mr-3 file:rounded-full file:bg-raised file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-fg";
+
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const uploadModal = useUploadModal();
@@ -120,47 +125,52 @@ const UploadModal = () => {
     <Modal
       isopen={uploadModal.isOpen}
       onChange={onChange}
-      title="Add a new song"
-      description="Upload a song: MP3, M4A, AAC, WAV, OGG or FLAC."
+      title="Upload a song"
+      description="Share a song with everyone on La-musique."
     >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col space-y-3"
-      >
-        <Input
-          id="title"
-          disabled={isLoading}
-          {...register("title", { required: true })}
-          placeholder="song title"
-        />
-        <Input
-          id="author"
-          disabled={isLoading}
-          {...register("author", { required: true })}
-          placeholder="Name of the author"
-        />
-        <div>
-          <p className="pb-1">select a song</p>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
+        <label className={fieldLabel}>
+          Title
           <Input
-            id="song"
+            disabled={isLoading}
+            {...register("title", { required: true })}
+          />
+        </label>
+        <label className={fieldLabel}>
+          Artist
+          <Input
+            disabled={isLoading}
+            {...register("author", { required: true })}
+          />
+        </label>
+        <label className={fieldLabel}>
+          Song
+          <Input
             type="file"
             accept={AUDIO_ACCEPT}
             disabled={isLoading}
+            className={fileInput}
             {...register("song", { required: true })}
           />
-        </div>
-        <div>
-          <p className="pb-1">select an image</p>
+          <span className="text-xs font-normal text-muted">
+            MP3, M4A, AAC, WAV, OGG or FLAC, up to 50MB.
+          </span>
+        </label>
+        <label className={fieldLabel}>
+          Cover image
           <Input
-            id="image"
             type="file"
             accept={IMAGE_TYPES.join(",")}
             disabled={isLoading}
+            className={fileInput}
             {...register("image", { required: true })}
           />
-        </div>
+          <span className="text-xs font-normal text-muted">
+            JPEG, PNG, WebP or GIF, up to 5MB.
+          </span>
+        </label>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "creating..." : "create"}
+          {isLoading ? "Uploading..." : "Upload"}
         </Button>
       </form>
     </Modal>

@@ -48,6 +48,6 @@ export const textOn: Record<string, ColorToken[]> = {
   subtle: ["canvas", "surface"],
   accent: ["canvas", "surface", "raised"],
   danger: ["canvas", "surface", "raised", "overlay"],
-  "on-accent": ["accent", "accent-hover", "danger-bg", "fg"],
+  "on-accent": ["accent", "accent-hover", "danger-bg", "danger", "fg"],
   "on-light-muted": ["fg"],
 };
