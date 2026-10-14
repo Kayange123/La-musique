@@ -34,6 +34,34 @@ export type Database = {
   };
   public: {
     Tables: {
+      artist_profiles: {
+        Row: {
+          avatar_path: string | null;
+          bio: string | null;
+          created_at: string;
+          display_name: string;
+          handle: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          avatar_path?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          display_name: string;
+          handle: string;
+          user_id?: string;
+        };
+        Update: {
+          avatar_path?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          display_name?: string;
+          handle?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       customers: {
         Row: {
           id: string;
