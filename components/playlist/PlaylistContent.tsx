@@ -7,6 +7,12 @@ import { FiArrowDown, FiArrowUp, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import { BsPlayFill } from "react-icons/bs";
 import { IPlaylist, ISong } from "@/types";
 import MediaItem from "../ui/MediaItem";
+import {
+  iconButton,
+  iconButtonDanger,
+  pillOutline,
+  playButton,
+} from "../ui/styles";
 import LikeButton from "../ui/LikeButton";
 import SongMenu from "../ui/SongMenu";
 import useOnPlay from "@/hooks/useOnPlay";
@@ -27,8 +33,7 @@ interface PlaylistContentProps {
   entries: PlaylistEntry[];
 }
 
-const iconButtonClass =
-  "p-2 rounded-full text-neutral-400 hover:text-white disabled:opacity-30 disabled:hover:text-neutral-400";
+const iconButtonClass = iconButton;
 
 const PlaylistContent = ({ playlist, entries }: PlaylistContentProps) => {
   const router = useRouter();
@@ -79,31 +84,31 @@ const PlaylistContent = ({ playlist, entries }: PlaylistContentProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-y-4 px-6 pb-6">
+    <div className="flex flex-col gap-y-4 px-6 pt-6 pb-10">
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => songs[0] && onPlay(songs[0].id)}
           disabled={songs.length === 0}
           aria-label={`Play ${playlist.name}`}
-          className="rounded-full bg-green-500 p-3 text-black transition hover:scale-105 disabled:opacity-50"
+          className={`${playButton} h-14 w-14`}
         >
           <BsPlayFill size={28} aria-hidden="true" />
         </button>
         <button
           type="button"
           onClick={() => openEdit(playlist)}
-          className="flex items-center gap-x-2 rounded-full border border-neutral-600 px-4 py-2 text-sm font-semibold hover:border-white"
+          className={pillOutline}
         >
           <FiEdit2 size={16} aria-hidden="true" />
           Edit details
         </button>
-        <label className="ml-auto flex items-center gap-x-2 text-sm text-neutral-400">
+        <label className="ml-auto flex items-center gap-x-2 text-sm text-muted">
           Sort
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as PlaylistSort)}
-            className="rounded-md border border-neutral-600 bg-neutral-800 px-2 py-2 text-white"
+            className="h-10 rounded-lg border border-line-strong bg-raised px-3 text-fg"
           >
             {(Object.keys(SORT_LABELS) as PlaylistSort[]).map((option) => (
               <option key={option} value={option}>
@@ -116,18 +121,18 @@ const PlaylistContent = ({ playlist, entries }: PlaylistContentProps) => {
           type="button"
           onClick={() => openDelete(playlist)}
           aria-label="Delete playlist"
-          className="p-2 text-neutral-400 hover:text-red-400"
+          className={iconButtonDanger}
         >
           <FiTrash2 size={20} aria-hidden="true" />
         </button>
       </div>
       {sort !== "custom" && entries.length > 1 && (
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-muted">
           Switch to Custom order to rearrange songs.
         </p>
       )}
       {songs.length === 0 ? (
-        <p className="text-neutral-400">
+        <p className="text-muted">
           No songs yet. Use a song&apos;s menu or the playlist button in the
           player to add one.
         </p>
@@ -164,7 +169,7 @@ const PlaylistContent = ({ playlist, entries }: PlaylistContentProps) => {
                 type="button"
                 onClick={() => onRemove(song)}
                 aria-label={`Remove ${song.title} from ${playlist.name}`}
-                className="p-2 text-neutral-400 hover:text-white"
+                className={iconButton}
               >
                 <FiX size={20} aria-hidden="true" />
               </button>

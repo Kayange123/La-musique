@@ -17,25 +17,22 @@ const SongItem = ({ song, onClick }: SongItemProps) => {
       type="button"
       onClick={() => onClick(song?.id)}
       aria-label={`Play ${song?.title} by ${song?.author}`}
-      className="relative group flex text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500 flex-col items-center justify-center rounded-md overflow-hidden gap-x-4 bg-neutral-400/5 cursor-pointer hover:bg-neutral-400/10 transition p-3"
+      className="group flex flex-col gap-y-2 rounded-xl p-2 -m-2 text-left transition hover:bg-raised"
     >
-      <div className="relative aspect-square rounded-md overflow-hidden h-full w-full">
+      <div className="relative aspect-square w-full overflow-hidden rounded-lg">
         <Image
           src={imagePath || defaultImage}
           alt=""
           fill
+          sizes="(min-width: 1280px) 15vw, (min-width: 768px) 22vw, 45vw"
           className="object-cover"
         />
+        <div className="absolute bottom-2 right-2">
+          <PlayButton />
+        </div>
       </div>
-      <div className="flex flex-col items-start w-full pt-4 gap-y-1">
-        <p className="font-semibold truncate text-sm w-full">{song?.title}</p>
-        <p className="text-neutral-400 text-xs pb-4 w-full truncate">
-          By {song?.author}
-        </p>
-      </div>
-      <div className="absolute bottom-24 right-5">
-        <PlayButton />
-      </div>
+      <p className="w-full truncate font-semibold text-fg">{song?.title}</p>
+      <p className="-mt-2 w-full truncate text-sm text-muted">{song?.author}</p>
     </button>
   );
 };

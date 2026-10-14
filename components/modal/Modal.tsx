@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { IoMdClose } from "react-icons/io";
+import { roundIconButton } from "../ui/styles";
 
 interface ModalProps {
   isopen: boolean;
@@ -18,22 +19,22 @@ const Modal = ({
   return (
     <Dialog.Root open={isopen} onOpenChange={onChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-neutral-900/90 backdrop-blur-sm fixed inset-0" />
-        <Dialog.Content className="fixed drop-shadow-md border border-neutral-700 top-[50%] left-[50%] max-h-full h-full md:h-auto md:max-h-[85vh] w-full md:w-[90vw] md:max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-neutral-800 p-[25px] focus:outline-none">
-          <Dialog.Title className="text-xl text-center font-bold mb-2">
+        <Dialog.Overlay className="bg-canvas/80 backdrop-blur-sm fixed inset-0 z-40" />
+        <Dialog.Content className="fixed z-50 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] h-full max-h-full w-full overflow-y-auto border border-line bg-surface p-6 shadow-2xl md:h-auto md:max-h-[85vh] md:w-[90vw] md:max-w-[480px] md:rounded-2xl">
+          <Dialog.Title className="font-display text-2xl font-bold tracking-tight text-fg pr-10">
             {title}
           </Dialog.Title>
-          <Dialog.Description className="mb-3 text-sm md:text-lg leading-normal text-center">
+          <Dialog.Description className="mt-1 mb-5 text-muted">
             {description}
           </Dialog.Description>
-          <div className="">{children}</div>
+          <div>{children}</div>
           <Dialog.Close asChild>
             <button
               type="button"
               aria-label="Close"
-              className="text-neutral-400 hover:text-white absolute top-3 right-3"
+              className={`${roundIconButton} absolute top-5 right-5`}
             >
-              <IoMdClose size={25} />
+              <IoMdClose size={18} aria-hidden="true" />
             </button>
           </Dialog.Close>
         </Dialog.Content>

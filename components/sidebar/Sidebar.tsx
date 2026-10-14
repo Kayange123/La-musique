@@ -31,9 +31,9 @@ const Sidebar = ({ children, songs, playlists }: SidebarProps) => {
         player.activeId && "h-[calc(100%-4rem-85px)] md:h-[calc(100%-85px)]",
       )}
     >
-      <div className="hidden md:flex flex-col gap-y-2 w-[300px] h-full bg-black p-2">
+      <div className="hidden md:flex flex-col gap-y-2 w-[300px] h-full bg-canvas p-2">
         <Container>
-          <nav aria-label="Main" className="flex flex-col gap-y-4 px-5 py-5">
+          <nav aria-label="Main" className="flex flex-col gap-y-1 p-3">
             {routes.map((route) => (
               <SidebarItem key={route.label} {...route} />
             ))}
@@ -43,7 +43,9 @@ const Sidebar = ({ children, songs, playlists }: SidebarProps) => {
           <Library songs={songs} playlists={playlists} />
         </Container>
       </div>
-      <main className="h-full flex-1 overflow-y-auto py-2">{children}</main>
+      <main className="h-full flex-1 overflow-y-auto py-2 px-2 md:pl-0">
+        {children}
+      </main>
       <QueuePanel />
     </div>
   );

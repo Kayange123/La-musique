@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getPlaylist } from "@/actions";
 import PlaylistCover from "@/components/playlist/PlaylistCover";
-import Heading from "@/components/ui/Heading";
+import CollectionHeader from "@/components/ui/CollectionHeader";
 import PlaylistContent from "@/components/playlist/PlaylistContent";
 import { parsePlaylistId } from "@/lib/playlists";
 
@@ -22,26 +22,14 @@ const PlaylistPage = async ({
 
   const { playlist, entries, coverUrls } = result;
   return (
-    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
-      <Heading>
-        <div className="mt-20 flex flex-col md:flex-row items-center gap-5">
-          <PlaylistCover urls={coverUrls} />
-          <div className="flex flex-col gap-y-2">
-            <p className="hidden md:block font-semibold text-sm">Playlist</p>
-            <h1 className="text-white text-3xl md:text-5xl font-bold break-words">
-              {playlist.name}
-            </h1>
-            {playlist.description && (
-              <p className="text-neutral-300 max-w-prose">
-                {playlist.description}
-              </p>
-            )}
-            <p className="text-neutral-400 text-sm">
-              {entries.length} {entries.length === 1 ? "song" : "songs"}
-            </p>
-          </div>
-        </div>
-      </Heading>
+    <div className="bg-surface rounded-xl h-full w-full overflow-hidden overflow-y-auto">
+      <CollectionHeader
+        label="Playlist · Private"
+        title={playlist.name}
+        description={playlist.description}
+        songCount={entries.length}
+        cover={<PlaylistCover urls={coverUrls} />}
+      />
       <PlaylistContent playlist={playlist} entries={entries} />
     </div>
   );

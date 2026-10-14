@@ -5,6 +5,7 @@ import Modal from "../modal/Modal";
 import QueueList from "./QueueList";
 import useQueuePanel from "@/hooks/useQueuePanel";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { roundIconButton, sectionTitle } from "../ui/styles";
 import usePlayer from "@/hooks/usePlayer";
 
 // Desktop: a column beside the page, so the player stays usable while it's
@@ -36,17 +37,17 @@ const QueuePanel = () => {
   return (
     <aside
       aria-labelledby="queue-panel-heading"
-      className="w-[340px] shrink-0 h-full overflow-y-auto bg-neutral-900 rounded-lg p-4 my-2 mr-2 flex flex-col gap-y-4"
+      className="w-[340px] shrink-0 h-full overflow-y-auto bg-surface rounded-xl p-4 my-2 mr-2 flex flex-col gap-y-4"
     >
       <div className="flex items-center justify-between">
-        <h2 id="queue-panel-heading" className="text-xl font-semibold">
+        <h2 id="queue-panel-heading" className={sectionTitle}>
           Up next
         </h2>
         <button
           type="button"
           onClick={close}
           aria-label="Close queue"
-          className="p-2 rounded-full text-neutral-400 hover:text-white"
+          className={roundIconButton}
         >
           <FiX size={18} aria-hidden="true" />
         </button>

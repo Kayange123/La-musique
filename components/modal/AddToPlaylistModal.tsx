@@ -59,7 +59,7 @@ const AddToPlaylistForm = ({ songId }: { songId: number }) => {
   return (
     <div className="flex flex-col gap-y-4">
       {playlists === null ? (
-        <p className="text-neutral-400 text-sm">Loading playlists...</p>
+        <p className="text-muted text-sm">Loading playlists...</p>
       ) : playlists.length > 0 ? (
         <ul className="flex flex-col max-h-60 overflow-y-auto">
           {playlists.map((playlist) => (
@@ -67,7 +67,7 @@ const AddToPlaylistForm = ({ songId }: { songId: number }) => {
               <button
                 type="button"
                 onClick={() => addTo(playlist.id, playlist.name)}
-                className="flex w-full items-center gap-x-3 rounded-md p-2 text-left hover:bg-neutral-700"
+                className="flex w-full items-center gap-x-3 rounded-lg p-2 text-left text-fg transition hover:bg-raised"
               >
                 <RiPlayListFill size={20} aria-hidden="true" />
                 <span className="truncate">{playlist.name}</span>
@@ -76,12 +76,14 @@ const AddToPlaylistForm = ({ songId }: { songId: number }) => {
           ))}
         </ul>
       ) : (
-        <p className="text-neutral-400 text-sm">
+        <p className="text-muted text-sm">
           You don&apos;t have any playlists yet.
         </p>
       )}
-      <div className="border-t border-neutral-700 pt-3">
-        <p className="text-sm mb-2">Or create a new one:</p>
+      <div className="border-t border-line pt-3">
+        <p className="text-sm font-semibold text-fg mb-2">
+          Or create a new one
+        </p>
         <PlaylistNameForm
           submitLabel="Create and add"
           onSubmit={createAndAdd}

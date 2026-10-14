@@ -34,6 +34,17 @@ interface PlayerProps {
   songUrl: string;
   song: ISong;
 }
+// The shape, then the colour: exactly one text colour per state, so the
+// active colour can't be overridden by the idle one.
+const controlShape =
+  "grid place-items-center h-10 w-10 rounded-full transition";
+const controlClass = `${controlShape} text-muted hover:text-fg`;
+const activeControlClass = `${controlShape} text-accent hover:text-accent-hover`;
+const strongControlClass = `${controlShape} text-fg hover:text-accent`;
+// A light disc with a dark icon, as in the mockups.
+const playClass =
+  "grid place-items-center h-11 w-11 rounded-full bg-fg text-on-accent transition hover:scale-105";
+
 const PlayerContent = ({ song, songUrl }: PlayerProps) => {
   const imageUrl = useLoadImage(song);
   const openAddSong = usePlaylistDialog((state) => state.openAddSong);
@@ -217,15 +228,15 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
-      <div className="flex max-w-xs justify-start">
-        <div className="flex items-center w-full gap-x-4">
-          <MediaItem song={song} onClick={handlePlay} />
+      <div className="flex max-w-xs justify-start min-w-0">
+        <div className="flex items-center w-full gap-x-1 min-w-0">
+          <MediaItem song={song} onClick={handlePlay} wrapTitle />
           <LikeButton songId={song?.id} />
           <button
             type="button"
             onClick={() => openAddSong(song.id)}
             aria-label="Add to playlist"
-            className="text-neutral-400 hover:text-white transition"
+            className={controlClass}
           >
             <RiPlayListAddLine size={22} aria-hidden="true" />
           </button>
@@ -234,11 +245,7 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
             onClick={toggleQueue}
             aria-label="Up next"
             aria-pressed={queueOpen}
-            className={
-              queueOpen
-                ? "text-green-500"
-                : "text-neutral-400 hover:text-white transition"
-            }
+            className={queueOpen ? activeControlClass : controlClass}
           >
             <MdQueueMusic size={24} aria-hidden="true" />
           </button>
@@ -249,47 +256,45 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
           type="button"
           onClick={handlePlay}
           aria-label={playLabel}
-          className="flex items-center h-10 w-10 justify-center rounded-full bg-white p-1"
+          className={playClass}
         >
-          <Icon size={30} className="text-black" />
+          <Icon size={26} aria-hidden="true" />
         </button>
       </div>
       <div className="hidden md:flex flex-col items-center justify-center h-full w-full max-w-[720px] gap-y-1">
-        <div className="flex items-center justify-center gap-x-6">
+        <div className="flex items-center justify-center gap-x-3">
           <button
             type="button"
             onClick={toggleShuffle}
             aria-label="Shuffle"
             aria-pressed={shuffle}
-            className={
-              shuffle ? "text-green-500" : "text-neutral-400 hover:text-white"
-            }
+            className={shuffle ? activeControlClass : controlClass}
           >
-            <BsShuffle size={20} />
+            <BsShuffle size={18} aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={onPlayPrevious}
             aria-label="Previous song"
-            className="text-neutral-400 transition hover:text-white"
+            className={strongControlClass}
           >
-            <AiFillStepBackward size={30} />
+            <AiFillStepBackward size={26} aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={handlePlay}
             aria-label={playLabel}
-            className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1"
+            className={playClass}
           >
-            <Icon size={30} className="text-black" />
+            <Icon size={26} aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={onPlayNext}
             aria-label="Next song"
-            className="text-neutral-400 transition hover:text-white"
+            className={strongControlClass}
           >
-            <AiFillStepForward size={30} />
+            <AiFillStepForward size={26} aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -301,25 +306,22 @@ const PlayerContent = ({ song, songUrl }: PlayerProps) => {
                   ? "Repeat one"
                   : "Repeat off"
             }
-            className={
-              repeat === "off"
-                ? "text-neutral-400 hover:text-white"
-                : "text-green-500"
-            }
+            className={repeat === "off" ? controlClass : activeControlClass}
           >
-            <RepeatIcon size={20} />
+            <RepeatIcon size={18} aria-hidden="true" />
           </button>
         </div>
         <SeekBar sound={sound} isPlaying={isPlaying} />
       </div>
       <div className="hidden md:flex w-full pr-2 justify-end">
-        <div className="flex items-center gap-x-2 w-[120px]">
+        <div className="flex items-center gap-x-1 w-[140px]">
           <button
             type="button"
             onClick={toggleMute}
             aria-label={volume === 0 ? "Unmute" : "Mute"}
+            className={strongControlClass}
           >
-            <VolumeIcon size={32} />
+            <VolumeIcon size={22} aria-hidden="true" />
           </button>
           <Slider
             label="Volume"

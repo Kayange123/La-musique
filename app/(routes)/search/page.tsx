@@ -13,12 +13,9 @@ const SearchPage = async (props: PageProps) => {
   const searchParams = await props.searchParams;
   const songs = await getSongsByTitle(searchParams.title);
   return (
-    <div className="bg-neutral-900 rounded-lg w-full h-full overflow-hidden overflow-y-auto">
-      <Heading className="from-bg-neutral-900">
-        <div className="flex flex-col mb-2 gap-y-6">
-          <h1 className="text-white text-xl font-semibold">Search</h1>
-          <SearchInput />
-        </div>
+    <div className="bg-surface rounded-xl w-full h-full overflow-hidden overflow-y-auto">
+      <Heading>
+        <SearchInput />
       </Heading>
       <SearchContent songs={songs} />
     </div>
