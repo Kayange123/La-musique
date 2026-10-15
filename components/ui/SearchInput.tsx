@@ -2,16 +2,23 @@
 
 import qs from "query-string";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import useDebounce from "@/hooks/useDebounce";
 import { BiSearch } from "react-icons/bi";
 import { pageTitle } from "./styles";
 
 const SearchInput = () => {
   const router = useRouter();
-  const [value, setValue] = useState<string>("");
+  const searchParams = useSearchParams();
+  // Start from the URL, so a shared or reloaded search keeps its text.
+  const current = searchParams.get("title") ?? "";
+  const [value, setValue] = useState<string>(current);
   const debouncedValue = useDebounce<string>(value, 1000);
   useEffect(() => {
+    // Already showing these results.
+    if (debouncedValue === current) {
+      return;
+    }
     const query = {
       title: debouncedValue,
     };
@@ -23,7 +30,7 @@ const SearchInput = () => {
       { skipNull: true },
     );
     router.push(url);
-  }, [debouncedValue, router]);
+  }, [debouncedValue, current, router]);
   return (
     <div className="flex flex-col gap-y-4 max-w-xl">
       <label htmlFor="search-input" className={pageTitle}>
@@ -35,7 +42,7 @@ const SearchInput = () => {
         <input
           id="search-input"
           type="search"
-          placeholder="Songs by title"
+          placeholder="Songs or artists"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           className="h-full flex-1 bg-transparent text-base text-on-accent placeholder:text-on-light-muted focus:outline-none"

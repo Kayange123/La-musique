@@ -12,7 +12,9 @@ const LikedSongs = async () => {
         label="Playlist"
         title="Liked songs"
         songCount={songs.length}
-        cover={<LikedCover className="h-32 w-32 rounded-lg lg:h-44 lg:w-44" />}
+        cover={
+          <LikedCover className="h-32 w-32 rounded-lg shadow-2xl lg:h-44 lg:w-44" />
+        }
       />
       <LikedSongsContent songs={songs} />
     </div>

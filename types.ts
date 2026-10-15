@@ -8,3 +8,5 @@ export type ISubscription = Tables<"subscriptions"> & {
   prices?: IPrice | null;
 };
 export type IPlaylist = Tables<"playlists">;
+
+export type IArtistProfile = Tables<"artist_profiles">;
