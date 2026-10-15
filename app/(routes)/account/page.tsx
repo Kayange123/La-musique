@@ -1,4 +1,5 @@
-import { getAccountSummary } from "@/actions";
+import { getAccountSummary, getMyArtistProfile } from "@/actions";
+import ArtistProfileForm from "@/components/artist/ArtistProfileForm";
 import Heading from "@/components/ui/Heading";
 import { pageTitle } from "@/components/ui/styles";
 import Link from "next/link";
@@ -7,8 +8,11 @@ import { redirect } from "next/navigation";
 export const revalidate = 0;
 
 const AccountPage = async () => {
-  const account = await getAccountSummary();
-  if (!account) {
+  const [account, artist] = await Promise.all([
+    getAccountSummary(),
+    getMyArtistProfile(),
+  ]);
+  if (!account || !artist) {
     redirect("/");
   }
 
@@ -34,6 +38,13 @@ const AccountPage = async () => {
             <p className="text-muted text-sm">{label}</p>
           </Link>
         ))}
+      </div>
+      <div className="px-6 pt-10 pb-10">
+        <ArtistProfileForm
+          userId={artist.userId}
+          profile={artist.profile}
+          avatarUrl={artist.avatarUrl}
+        />
       </div>
     </div>
   );
