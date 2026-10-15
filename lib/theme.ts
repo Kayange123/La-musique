@@ -40,6 +40,15 @@ export const tileColors = [
 
 export const tileColor = (id: number) => tileColors[id % tileColors.length];
 
+// The same, for string keys such as user ids: a small stable hash.
+export const tileColorFor = (key: string) => {
+  let hash = 0;
+  for (const char of key) {
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }
+  return tileColors[hash % tileColors.length];
+};
+
 // Which text colours are used on which backgrounds. The contrast test
 // checks every pair listed here.
 export const textOn: Record<string, ColorToken[]> = {

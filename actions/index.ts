@@ -1,4 +1,4 @@
-import { IPlaylist, ISong } from "@/types";
+import { IArtistProfile, IPlaylist, ISong } from "@/types";
 import { createClient, getUserId } from "@/lib/supabase/server";
 import { latestDistinct } from "@/lib/history";
 import { PlaylistEntry } from "@/lib/playlistOrder";
@@ -203,4 +203,93 @@ export const getRecentlyPlayed = async (): Promise<ISong[]> => {
   return latestDistinct(data, { limit: RECENTLY_PLAYED }).flatMap((row) =>
     row.songs ? [row.songs] : [],
   );
+};
+
+export interface ArtistPageData {
+  profile: IArtistProfile;
+  avatarUrl: string | null;
+  songs: ISong[];
+}
+
+const imageUrl = (
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  path: string | null,
+) =>
+  path
+    ? supabase.storage.from("images").getPublicUrl(path).data.publicUrl
+    : null;
+
+// An artist's public page: their profile and the songs they uploaded.
+export const getArtistByHandle = async (
+  handle: string,
+): Promise<ArtistPageData | null> => {
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("artist_profiles")
+    .select("*")
+    .eq("handle", handle)
+    .maybeSingle();
+
+  if (!profile) {
+    return null;
+  }
+
+  const { data: songs } = await supabase
+    .from("songs")
+    .select("*")
+    .eq("user_id", profile.user_id)
+    .order("created_at", { ascending: false });
+
+  return {
+    profile,
+    avatarUrl: imageUrl(supabase, profile.avatar_path),
+    songs: songs ?? [],
+  };
+};
+
+// The signed-in user's own profile, for the Account page.
+export const getMyArtistProfile = async (): Promise<{
+  userId: string;
+  profile: IArtistProfile | null;
+  avatarUrl: string | null;
+} | null> => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+  if (!userId) {
+    return null;
+  }
+  const { data: profile } = await supabase
+    .from("artist_profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return {
+    userId,
+    profile: profile ?? null,
+    avatarUrl: imageUrl(supabase, profile?.avatar_path ?? null),
+  };
+};
+
+const ARTIST_RESULTS = 6;
+
+// Artists whose name or handle contains the search text.
+export const searchArtists = async (query: string) => {
+  // The text goes inside a PostgREST or() filter, where commas, brackets
+  // and quotes are syntax; drop them so a search can't add conditions.
+  const text = query.replace(/[,()"'\\]/g, " ").trim();
+  if (!text) {
+    return [];
+  }
+  const supabase = await createClient();
+  // Escape LIKE wildcards so "%" or "_" in the search match literally.
+  const pattern = `%${text.replace(/[%_]/g, (c) => `\\${c}`)}%`;
+  const { data } = await supabase
+    .from("artist_profiles")
+    .select("*")
+    .or(`display_name.ilike.${pattern},handle.ilike.${pattern}`)
+    .limit(ARTIST_RESULTS);
+  return (data ?? []).map((profile) => ({
+    profile,
+    avatarUrl: imageUrl(supabase, profile.avatar_path),
+  }));
 };
