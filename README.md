@@ -15,6 +15,7 @@ Built with Next.js 16 (App Router), React 19, Supabase (auth, Postgres, storage)
 - Keyboard shortcuts: Space or K to play/pause, ←/→ to seek 5 seconds, Shift+N / Shift+P for next/previous, M to mute
 - Lock-screen and media-key controls (Media Session API)
 - Mobile layout with a bottom tab bar, and an account page
+- Report songs; admins review reports and hide songs for everyone but the uploader
 
 ## Getting started
 
@@ -65,6 +66,16 @@ npx supabase migration repair 20230917000000 --status applied
 Then run `npx supabase db push` to apply the later migrations, such as the image type restriction.
 
 To enable Google or Facebook sign-in, configure the providers under Authentication → Providers.
+
+#### Admins
+
+Admins review reported songs at `/admin` and can hide or restore them. There's no sign-up for it: grant it in the SQL editor (or `psql` locally) with the user's id from Authentication → Users:
+
+```sql
+insert into public.admins (user_id) values ('<user id>');
+```
+
+Delete the row to take it away.
 
 ### 3. Configure environment variables
 
