@@ -20,11 +20,26 @@ export type ModerationAction = "hide" | "dismiss" | "restore";
 const isReason = (value: string): value is ReportReason =>
   REPORT_REASONS.some((reason) => reason.value === value);
 
-// One report per listener per song (a unique constraint); a second one
-// is a friendly no rather than a database error.
-const ALREADY_REPORTED = "23505";
-// The insert policy only matches songs the reporter can see.
-const NOT_ALLOWED = "42501";
+// Database refusals with a friendlier message: one report per listener
+// per song (a unique constraint), and the insert policy only matching
+// songs the reporter can see.
+const REPORT_ERRORS: Record<string, string> = {
+  "23505": "You've already reported this song",
+  "42501": "This song can't be reported",
+};
+
+// Checks the form before asking the database; returns the details to
+// store (blank becomes null).
+const validateReport = (reason: string, details: string) => {
+  if (!isReason(reason)) {
+    throw new Error("Choose a reason");
+  }
+  const trimmed = details.trim();
+  if (trimmed.length > MAX_REPORT_DETAILS) {
+    throw new Error(`Keep details under ${MAX_REPORT_DETAILS} characters`);
+  }
+  return { reason, details: trimmed || null };
+};
 
 export const reportSong = async (
   supabase: Client,
@@ -34,26 +49,12 @@ export const reportSong = async (
     details,
   }: { songId: number; reason: string; details: string },
 ) => {
-  if (!isReason(reason)) {
-    throw new Error("Choose a reason");
-  }
-  const trimmed = details.trim();
-  if (trimmed.length > MAX_REPORT_DETAILS) {
-    throw new Error(`Keep details under ${MAX_REPORT_DETAILS} characters`);
-  }
-  const { error } = await supabase.from("song_reports").insert({
-    song_id: songId,
-    reason,
-    details: trimmed || null,
-  });
-  if (error?.code === ALREADY_REPORTED) {
-    throw new Error("You've already reported this song");
-  }
-  if (error?.code === NOT_ALLOWED) {
-    throw new Error("This song can't be reported");
-  }
+  const report = validateReport(reason, details);
+  const { error } = await supabase
+    .from("song_reports")
+    .insert({ song_id: songId, ...report });
   if (error) {
-    throw new Error(error.message);
+    throw new Error(REPORT_ERRORS[error.code] ?? error.message);
   }
 };
 
