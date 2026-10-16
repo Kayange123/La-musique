@@ -10,7 +10,11 @@ import usePlayer from "@/hooks/usePlayer";
 import usePlaylistDialog from "@/hooks/usePlaylistDialog";
 import useAuthModal from "@/hooks/useAuthModal";
 import useSongActions from "@/hooks/useSongActions";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiFlag, FiTrash2, FiUser } from "react-icons/fi";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSupabase } from "@/providers/Supabase";
+import { lookupHandle } from "@/lib/artistDirectory";
 import { useUser } from "@/hooks/useUser";
 
 interface SongMenuProps {
@@ -43,6 +47,19 @@ const SongMenu = ({ song }: SongMenuProps) => {
   const authModal = useAuthModal();
   const openAddSong = usePlaylistDialog((state) => state.openAddSong);
   const songActions = useSongActions();
+  const { supabaseClient } = useSupabase();
+  const router = useRouter();
+  // The artist's handle, looked up when the menu first opens; null if the
+  // uploader hasn't made a profile.
+  const [artistHandle, setArtistHandle] = useState<string | null>(null);
+
+  const onOpenChange = (open: boolean) => {
+    if (open && song.user_id) {
+      lookupHandle(supabaseClient, song.user_id)
+        .then(setArtistHandle)
+        .catch(() => setArtistHandle(null));
+    }
+  };
   // Only the uploader can edit or delete; RLS enforces it regardless.
   const isOwner = !!user && user.id === song.user_id;
 
@@ -61,7 +78,7 @@ const SongMenu = ({ song }: SongMenuProps) => {
   });
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root onOpenChange={onOpenChange}>
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
@@ -93,6 +110,27 @@ const SongMenu = ({ song }: SongMenuProps) => {
             <RiPlayListAddLine size={18} aria-hidden="true" />
             Add to playlist
           </DropdownMenu.Item>
+          {artistHandle && (
+            <DropdownMenu.Item
+              className={itemClass}
+              onSelect={() => router.push(`/artist/${artistHandle}`)}
+            >
+              <FiUser size={16} aria-hidden="true" />
+              Go to artist
+            </DropdownMenu.Item>
+          )}
+          {!isOwner && (
+            <>
+              <DropdownMenu.Separator className="my-1 h-px bg-line" />
+              <DropdownMenu.Item
+                className={itemClass}
+                onSelect={whenSignedIn(() => songActions.openReport(song))}
+              >
+                <FiFlag size={16} aria-hidden="true" />
+                Report song
+              </DropdownMenu.Item>
+            </>
+          )}
           {isOwner && (
             <>
               <DropdownMenu.Separator className="my-1 h-px bg-line" />

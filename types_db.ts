@@ -34,6 +34,50 @@ export type Database = {
   };
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      artist_profiles: {
+        Row: {
+          avatar_path: string | null;
+          bio: string | null;
+          created_at: string;
+          display_name: string;
+          handle: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          avatar_path?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          display_name: string;
+          handle: string;
+          user_id?: string;
+        };
+        Update: {
+          avatar_path?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          display_name?: string;
+          handle?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       customers: {
         Row: {
           id: string;
@@ -253,10 +297,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      song_reports: {
+        Row: {
+          created_at: string;
+          details: string | null;
+          id: number;
+          reason: string;
+          reporter_id: string;
+          resolved_at: string | null;
+          resolved_by: string | null;
+          song_id: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          details?: string | null;
+          id?: number;
+          reason: string;
+          reporter_id?: string;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          song_id: number;
+        };
+        Update: {
+          created_at?: string;
+          details?: string | null;
+          id?: number;
+          reason?: string;
+          reporter_id?: string;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          song_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "song_reports_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       songs: {
         Row: {
           author: string | null;
           created_at: string | null;
+          hidden_at: string | null;
           id: number;
           image_path: string | null;
           song_path: string | null;
@@ -267,6 +354,7 @@ export type Database = {
         Insert: {
           author?: string | null;
           created_at?: string | null;
+          hidden_at?: string | null;
           id?: number;
           image_path?: string | null;
           song_path?: string | null;
@@ -276,6 +364,7 @@ export type Database = {
         Update: {
           author?: string | null;
           created_at?: string | null;
+          hidden_at?: string | null;
           id?: number;
           image_path?: string | null;
           song_path?: string | null;
@@ -377,7 +466,11 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      moderate_song: {
+        Args: { action: string; target: number };
+        Returns: undefined;
+      };
     };
     Enums: {
       pricing_plan_interval: "day" | "week" | "month" | "year";

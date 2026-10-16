@@ -37,7 +37,15 @@ const MediaItem = ({ onClick, song, wrapTitle = false }: MediaItemProps) => {
       </div>
       <div className="flex flex-col overflow-hidden">
         <p className={`font-medium text-fg ${titleClass}`}>{song?.title}</p>
-        <p className="text-muted text-sm truncate">{song?.author}</p>
+        <p className="flex items-center gap-x-2 text-muted text-sm min-w-0">
+          {/* Only the uploader and admins can see hidden songs at all. */}
+          {song?.hidden_at && (
+            <span className="shrink-0 rounded-full border border-danger px-1.5 text-[11px] font-semibold uppercase tracking-wide text-danger">
+              Hidden
+            </span>
+          )}
+          <span className="truncate">{song?.author}</span>
+        </p>
       </div>
     </button>
   );

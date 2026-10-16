@@ -1,6 +1,7 @@
 import useUploadModal from "@/hooks/useUploadModal";
 import { useState } from "react";
 import Modal from "./Modal";
+import ProfileHint from "../artist/ProfileHint";
 import uniqid from "uniqid";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import Input from "../ui/Input";
@@ -129,6 +130,9 @@ const UploadModal = () => {
       description="Share a song with everyone on La-musique."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
+        {user && uploadModal.isOpen && (
+          <ProfileHint userId={user.id} onNavigate={onChange} />
+        )}
         <label className={fieldLabel}>
           Title
           <Input
