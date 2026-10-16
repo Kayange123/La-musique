@@ -1,4 +1,8 @@
-import { getAccountSummary, getMyArtistProfile } from "@/actions";
+import {
+  getAccountSummary,
+  getMyArtistProfile,
+  getOpenReportCount,
+} from "@/actions";
 import ArtistProfileForm from "@/components/artist/ArtistProfileForm";
 import Heading from "@/components/ui/Heading";
 import { pageTitle } from "@/components/ui/styles";
@@ -8,9 +12,10 @@ import { redirect } from "next/navigation";
 export const revalidate = 0;
 
 const AccountPage = async () => {
-  const [account, artist] = await Promise.all([
+  const [account, artist, openReports] = await Promise.all([
     getAccountSummary(),
     getMyArtistProfile(),
+    getOpenReportCount(),
   ]);
   if (!account || !artist) {
     redirect("/");
@@ -19,6 +24,10 @@ const AccountPage = async () => {
   const stats = [
     { label: "Songs uploaded", value: account.uploadCount, href: "/library" },
     { label: "Liked songs", value: account.likeCount, href: "/liked-songs" },
+    // Admins only.
+    ...(openReports === null
+      ? []
+      : [{ label: "Reports to review", value: openReports, href: "/admin" }]),
   ];
 
   return (
