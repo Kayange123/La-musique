@@ -62,8 +62,11 @@ const useAutoStart = () => {
   const uploadOpen = useUploadModal((state) => state.isOpen);
 
   useEffect(() => {
-    const blocked = authOpen || uploadOpen || pathname !== "/";
-    if (!user || blocked || readSeen(user.id)) {
+    const canOffer = [!authOpen, !uploadOpen, pathname === "/"].every(Boolean);
+    if (!user || !canOffer) {
+      return;
+    }
+    if (readSeen(user.id)) {
       return;
     }
     const timer = setTimeout(() => useTour.getState().request(), 800);
@@ -170,6 +173,23 @@ const Spotlight = ({ rect }: { rect: DOMRect | null }) =>
     <div className="absolute inset-0 bg-canvas/80" />
   );
 
+// The card beside the highlight, or centred when there's none.
+const cardPosition = (rect: DOMRect | null, card: typeof CARD_GUESS) =>
+  rect
+    ? placeCard({
+        target: padded(rect),
+        card,
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+      })
+    : centred;
+
+// The welcome offers a way out; the last step finishes.
+const buttonLabels = (index: number, total: number) => ({
+  secondary: index === 0 ? "Skip tour" : "Back",
+  primary:
+    index === total - 1 ? "Done" : index === 0 ? "Show me around" : "Next",
+});
+
 const Tour = () => {
   useAutoStart();
   useOpenWhenReady();
@@ -192,16 +212,9 @@ const Tour = () => {
     return null;
   }
 
-  const isFirst = index === 0;
-  const isLast = index === steps.length - 1;
-  const position = rect
-    ? placeCard({
-        target: padded(rect),
-        card,
-        viewport: { width: window.innerWidth, height: window.innerHeight },
-      })
-    : centred;
-  const primaryLabel = isLast ? "Done" : isFirst ? "Show me around" : "Next";
+  const labels = buttonLabels(index, steps.length);
+  const onSecondary = index === 0 ? finish : () => go(index - 1);
+  const onPrimary = index === steps.length - 1 ? finish : () => go(index + 1);
 
   return (
     <Dialog.Root open onOpenChange={(open) => !open && finish()}>
@@ -211,7 +224,7 @@ const Tour = () => {
         </Dialog.Overlay>
         <Dialog.Content
           ref={cardRef}
-          style={position}
+          style={cardPosition(rect, card)}
           // Clicks on the page behind don't end the tour by accident.
           onPointerDownOutside={(event) => event.preventDefault()}
           onOpenAutoFocus={(event) => {
@@ -232,18 +245,18 @@ const Tour = () => {
           <div className="mt-3 flex items-center justify-between gap-x-3">
             <button
               type="button"
-              onClick={isFirst ? finish : () => go(index - 1)}
+              onClick={onSecondary}
               className="rounded-full px-3 py-2 text-sm font-semibold text-muted transition hover:text-fg"
             >
-              {isFirst ? "Skip tour" : "Back"}
+              {labels.secondary}
             </button>
             <button
               ref={primaryRef}
               type="button"
-              onClick={isLast ? finish : () => go(index + 1)}
+              onClick={onPrimary}
               className={pillAccent}
             >
-              {primaryLabel}
+              {labels.primary}
             </button>
           </div>
           <Dialog.Close asChild>
