@@ -10,7 +10,7 @@ import usePlayer from "@/hooks/usePlayer";
 import usePlaylistDialog from "@/hooks/usePlaylistDialog";
 import useAuthModal from "@/hooks/useAuthModal";
 import useSongActions from "@/hooks/useSongActions";
-import { FiEdit2, FiTrash2, FiUser } from "react-icons/fi";
+import { FiEdit2, FiFlag, FiTrash2, FiUser } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSupabase } from "@/providers/Supabase";
@@ -118,6 +118,18 @@ const SongMenu = ({ song }: SongMenuProps) => {
               <FiUser size={16} aria-hidden="true" />
               Go to artist
             </DropdownMenu.Item>
+          )}
+          {!isOwner && (
+            <>
+              <DropdownMenu.Separator className="my-1 h-px bg-line" />
+              <DropdownMenu.Item
+                className={itemClass}
+                onSelect={whenSignedIn(() => songActions.openReport(song))}
+              >
+                <FiFlag size={16} aria-hidden="true" />
+                Report song
+              </DropdownMenu.Item>
+            </>
           )}
           {isOwner && (
             <>

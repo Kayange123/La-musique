@@ -2,6 +2,7 @@ import { IArtistProfile, IPlaylist, ISong } from "@/types";
 import { createClient, getUserId } from "@/lib/supabase/server";
 import { latestDistinct } from "@/lib/history";
 import { PlaylistEntry } from "@/lib/playlistOrder";
+import { groupReports } from "@/lib/moderation";
 
 export const getSongs = async (): Promise<ISong[]> => {
   const supabase = await createClient();
@@ -9,6 +10,9 @@ export const getSongs = async (): Promise<ISong[]> => {
   const { data, error } = await supabase
     .from("songs")
     .select("*")
+    // Uploaders and admins can read hidden songs, but they don't belong
+    // in public lists, even for them.
+    .is("hidden_at", null)
     .order("created_at", { ascending: false });
 
   if (error) return [];
@@ -48,6 +52,7 @@ export const getSongsByTitle = async (title: string) => {
     .from("songs")
     .select("*")
     .ilike("title", `%${title}%`)
+    .is("hidden_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -238,6 +243,7 @@ export const getArtistByHandle = async (
     .from("songs")
     .select("*")
     .eq("user_id", profile.user_id)
+    .is("hidden_at", null)
     .order("created_at", { ascending: false });
 
   return {
@@ -292,4 +298,50 @@ export const searchArtists = async (query: string) => {
     profile,
     avatarUrl: imageUrl(supabase, profile.avatar_path),
   }));
+};
+
+export const isAdmin = async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("is_admin");
+  return data === true;
+};
+
+// The admin review page: songs with open reports, most reported first,
+// and the songs currently hidden. Null for anyone who isn't an admin.
+export const getModerationQueue = async () => {
+  const supabase = await createClient();
+  if (!(await isAdmin())) {
+    return null;
+  }
+  const [reports, hidden] = await Promise.all([
+    supabase
+      .from("song_reports")
+      .select("song_id, reason, details, created_at, songs(*)")
+      .is("resolved_at", null)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("songs")
+      .select("*")
+      .not("hidden_at", "is", null)
+      .order("hidden_at", { ascending: false }),
+  ]);
+  return {
+    reported: groupReports(reports.data ?? []),
+    hidden: hidden.data ?? [],
+  };
+};
+
+// Open reports, for the admin card on the Account page; null for anyone
+// who isn't an admin (reporters can read their own reports, so a plain
+// count would mislead them).
+export const getOpenReportCount = async () => {
+  if (!(await isAdmin())) {
+    return null;
+  }
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("song_reports")
+    .select("id", { count: "exact", head: true })
+    .is("resolved_at", null);
+  return count ?? 0;
 };
