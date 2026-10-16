@@ -12,12 +12,14 @@ const MobileNav = () => {
   return (
     <nav
       aria-label="Main"
+      data-tour="mobile-nav"
       className="md:hidden fixed bottom-0 inset-x-0 h-16 bg-canvas border-t border-line flex"
     >
       {getNavRoutes(pathname).map(({ icon: Icon, label, href, active }) => (
         <Link
           key={href}
           href={href}
+          data-tour={href === "/library" ? "mobile-library" : undefined}
           aria-current={active ? "page" : undefined}
           className={twMerge(
             "flex-1 flex flex-col items-center justify-center gap-y-1 text-xs text-muted transition",

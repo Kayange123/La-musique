@@ -52,7 +52,12 @@ export default async function Home() {
         <ResumeCard />
         <RecentlyPlayed songs={recentlyPlayed} />
         <section aria-labelledby="latest-heading">
-          <h2 id="latest-heading" className={sectionTitle}>
+          {/* The tour points here; the section itself can be very tall. */}
+          <h2
+            id="latest-heading"
+            data-tour="new-songs"
+            className={sectionTitle}
+          >
             New on La-musique
           </h2>
           <PageContent songs={songs} />
