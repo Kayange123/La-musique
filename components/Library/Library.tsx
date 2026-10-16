@@ -37,6 +37,7 @@ const Library = ({ songs, playlists }: LibraryProps) => {
           type="button"
           onClick={onClick}
           aria-label="Upload a song"
+          data-tour="upload"
           className={roundIconButton}
         >
           <AiOutlinePlus size={18} aria-hidden="true" />

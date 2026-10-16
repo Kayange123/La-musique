@@ -82,6 +82,7 @@ const Heading = ({ children, className }: HeadingProps) => {
               <Link
                 href="/account"
                 aria-label="Account"
+                data-tour="account"
                 className="grid h-10 w-10 place-items-center rounded-full bg-accent font-display text-lg font-bold text-on-accent transition hover:bg-accent-hover"
               >
                 {initial || <FaUserAlt size={16} aria-hidden="true" />}

@@ -5,6 +5,7 @@ import {
 } from "@/actions";
 import ArtistProfileForm from "@/components/artist/ArtistProfileForm";
 import Heading from "@/components/ui/Heading";
+import TakeTourButton from "@/components/tour/TakeTourButton";
 import { pageTitle } from "@/components/ui/styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -34,7 +35,10 @@ const AccountPage = async () => {
     <div className="bg-surface rounded-xl h-full w-full overflow-hidden overflow-y-auto">
       <Heading>
         <h1 className={pageTitle}>Account</h1>
-        {account.email && <p className="text-muted mt-2">{account.email}</p>}
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+          {account.email && <p className="text-muted">{account.email}</p>}
+          <TakeTourButton />
+        </div>
       </Heading>
       <div className="px-6 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
         {stats.map(({ label, value, href }) => (
