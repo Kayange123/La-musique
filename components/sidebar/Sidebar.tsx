@@ -33,7 +33,11 @@ const Sidebar = ({ children, songs, playlists }: SidebarProps) => {
     >
       <div className="hidden md:flex flex-col gap-y-2 w-[300px] h-full bg-canvas p-2">
         <Container>
-          <nav aria-label="Main" className="flex flex-col gap-y-1 p-3">
+          <nav
+            aria-label="Main"
+            data-tour="nav"
+            className="flex flex-col gap-y-1 p-3"
+          >
             {routes.map((route) => (
               <SidebarItem key={route.label} {...route} />
             ))}

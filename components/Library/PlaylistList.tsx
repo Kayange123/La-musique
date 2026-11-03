@@ -24,7 +24,11 @@ const PlaylistList = ({ playlists }: PlaylistListProps) => {
   const onCreate = () => (user ? openCreate() : authModal.onOpen());
 
   return (
-    <section aria-labelledby="playlists-heading" className="px-2 mt-4">
+    <section
+      aria-labelledby="playlists-heading"
+      data-tour="playlists"
+      className="px-2 mt-4"
+    >
       <div className="flex items-center justify-between px-2">
         <h2 id="playlists-heading" className={eyebrow}>
           Playlists

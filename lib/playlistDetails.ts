@@ -1,8 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import uniqid from "uniqid";
 import { Database } from "@/types_db";
 import { changeOwnPlaylist, cleanPlaylistName } from "./playlists";
-import { isValidImage } from "./upload";
+import { removeImage, replaceImage } from "./images";
 
 type Client = SupabaseClient<Database>;
 type PlaylistCover = { id: number; cover_path: string | null };
@@ -50,57 +49,26 @@ export const setSongPosition = (
     "Couldn't move this song",
   );
 
-const IMAGE_EXTENSIONS = new Map([
-  ["image/jpeg", "jpg"],
-  ["image/png", "png"],
-  ["image/webp", "webp"],
-  ["image/gif", "gif"],
-]);
-
-const removeImage = async (supabase: Client, path: string | null) => {
-  if (!path) {
-    return;
-  }
-  const { error } = await supabase.storage.from("images").remove([path]);
-  if (error) {
-    // The playlist no longer points at it; a leftover file is harmless.
-    console.error(`Couldn't remove images/${path}`, error);
-  }
-};
-
 // Uploads a new cover, points the playlist at it, then removes the old
 // one. If the playlist can't be updated, the new file is removed again.
-export const setPlaylistCover = async (
+export const setPlaylistCover = (
   supabase: Client,
   change: { playlist: PlaylistCover; file: File },
-) => {
-  const { playlist, file } = change;
-  if (!isValidImage(file)) {
-    throw new Error("Cover must be a JPEG, PNG, WebP or GIF under 5MB");
-  }
-  const path = `playlist-${playlist.id}-${uniqid()}.${IMAGE_EXTENSIONS.get(file.type)}`;
-  const upload = await supabase.storage
-    .from("images")
-    .upload(path, file, { contentType: file.type, upsert: false });
-  if (upload.error) {
-    throw new Error(upload.error.message);
-  }
-  try {
-    await changeOwnPlaylist(
-      supabase
-        .from("playlists")
-        .update({ cover_path: path })
-        .eq("id", playlist.id)
-        .select("id"),
-      "Couldn't update this playlist's cover",
-    );
-  } catch (error) {
-    await removeImage(supabase, path);
-    throw error;
-  }
-  await removeImage(supabase, playlist.cover_path);
-  return path;
-};
+) =>
+  replaceImage(supabase, {
+    file: change.file,
+    prefix: `playlist-${change.playlist.id}`,
+    oldPath: change.playlist.cover_path,
+    point: (path) =>
+      changeOwnPlaylist(
+        supabase
+          .from("playlists")
+          .update({ cover_path: path })
+          .eq("id", change.playlist.id)
+          .select("id"),
+        "Couldn't update this playlist's cover",
+      ),
+  });
 
 // Back to the automatic mosaic.
 export const removePlaylistCover = async (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FiShare, FiX } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 import usePlayer from "@/hooks/usePlayer";
+import { useTourActive } from "@/hooks/useTour";
 import { iconButton, pillAccent, pillOutline } from "../ui/styles";
 import {
   INSTALL_DISMISSED_KEY,
@@ -40,6 +41,7 @@ const InstallPrompt = () => {
     useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const hasPlayer = usePlayer((state) => state.activeId !== undefined);
+  const touring = useTourActive();
 
   useEffect(() => {
     const offer = (event: BeforeInstallPromptEvent | null) => {
@@ -76,7 +78,8 @@ const InstallPrompt = () => {
     };
   }, []);
 
-  if (!isVisible || !method) {
+  // Not on top of the guided tour, which also greets first visits.
+  if (!isVisible || !method || touring) {
     return null;
   }
 

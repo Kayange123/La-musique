@@ -1,5 +1,11 @@
-import { getAccountSummary } from "@/actions";
+import {
+  getAccountSummary,
+  getMyArtistProfile,
+  getOpenReportCount,
+} from "@/actions";
+import ArtistProfileForm from "@/components/artist/ArtistProfileForm";
 import Heading from "@/components/ui/Heading";
+import TakeTourButton from "@/components/tour/TakeTourButton";
 import { pageTitle } from "@/components/ui/styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -7,21 +13,32 @@ import { redirect } from "next/navigation";
 export const revalidate = 0;
 
 const AccountPage = async () => {
-  const account = await getAccountSummary();
-  if (!account) {
+  const [account, artist, openReports] = await Promise.all([
+    getAccountSummary(),
+    getMyArtistProfile(),
+    getOpenReportCount(),
+  ]);
+  if (!account || !artist) {
     redirect("/");
   }
 
   const stats = [
     { label: "Songs uploaded", value: account.uploadCount, href: "/library" },
     { label: "Liked songs", value: account.likeCount, href: "/liked-songs" },
+    // Admins only.
+    ...(openReports === null
+      ? []
+      : [{ label: "Reports to review", value: openReports, href: "/admin" }]),
   ];
 
   return (
     <div className="bg-surface rounded-xl h-full w-full overflow-hidden overflow-y-auto">
       <Heading>
         <h1 className={pageTitle}>Account</h1>
-        {account.email && <p className="text-muted mt-2">{account.email}</p>}
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+          {account.email && <p className="text-muted">{account.email}</p>}
+          <TakeTourButton />
+        </div>
       </Heading>
       <div className="px-6 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
         {stats.map(({ label, value, href }) => (
@@ -34,6 +51,13 @@ const AccountPage = async () => {
             <p className="text-muted text-sm">{label}</p>
           </Link>
         ))}
+      </div>
+      <div className="px-6 pt-10 pb-10">
+        <ArtistProfileForm
+          userId={artist.userId}
+          profile={artist.profile}
+          avatarUrl={artist.avatarUrl}
+        />
       </div>
     </div>
   );

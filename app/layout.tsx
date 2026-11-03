@@ -15,6 +15,7 @@ import { getPlaylists, getSongsByUserId } from "@/actions";
 import MediaPlayer from "@/components/player/MediaPlayer";
 import MobileNav from "@/components/nav/MobileNav";
 import InstallPrompt from "@/components/nav/InstallPrompt";
+import Tour from "@/components/tour/Tour";
 
 // Headings, body text and times (see tailwind.config.ts fontFamily).
 const display = Bricolage_Grotesque({
@@ -73,6 +74,7 @@ export default async function RootLayout({
             <MediaPlayer />
             <MobileNav />
             <InstallPrompt />
+            <Tour />
           </UserProvider>
         </SupabaseProvider>
       </body>

@@ -2,7 +2,7 @@ import Heading from "./Heading";
 import { eyebrow } from "./styles";
 
 interface CollectionHeaderProps {
-  label: string;
+  label: React.ReactNode;
   title: string;
   description?: string | null;
   songCount: number;
@@ -20,7 +20,7 @@ const CollectionHeader = ({
 }: CollectionHeaderProps) => (
   <Heading className="bg-band">
     <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end">
-      <div className="shrink-0 shadow-2xl">{cover}</div>
+      <div className="shrink-0">{cover}</div>
       <div className="flex min-w-0 flex-col gap-y-3">
         <p className={eyebrow}>{label}</p>
         <h1 className="font-display text-4xl font-bold leading-none tracking-tight text-fg break-words md:text-6xl">

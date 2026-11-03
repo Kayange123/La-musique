@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { ISong } from "@/types";
 import { useSupabase } from "@/providers/Supabase";
 import { useEffect, useMemo, useState } from "react";
+import usePlayer from "./usePlayer";
 
 const useGetSongById = (id?: number) => {
   const [song, setSong] = useState<ISong | undefined>(undefined);
@@ -20,7 +21,8 @@ const useGetSongById = (id?: number) => {
         .from("songs")
         .select("*")
         .eq("id", id)
-        .single();
+        // No row: deleted, or hidden by moderators since it was queued.
+        .maybeSingle();
 
       if (cancelled) {
         return;
@@ -28,6 +30,12 @@ const useGetSongById = (id?: number) => {
       if (error) {
         setFailedId(id);
         return toast.error(error.message);
+      }
+      if (!data) {
+        setFailedId(id);
+        toast.error("That song isn't available any more");
+        // Drop it from the queue and move on, as for a deleted song.
+        return usePlayer.getState().removeSong(id);
       }
       setSong(data);
     };
